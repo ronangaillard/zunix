@@ -21,7 +21,7 @@
 ;   0xFFFF  stack, grows down
 
 ; Name of this module: shown in kernel.map ("Defined In Module") and in error messages. Label only.
-	.module crt0
+	.module	crt0
 
 ; Options this file is meant to be linked with. The linker compares them with the C files and
 ; complains on a mismatch.
@@ -30,7 +30,7 @@
 ;                Version 1: 8-bit argument in A, 16-bit in HL; 8-bit result in A, 16-bit in DE
 ;                (main.asm: puts(s) finds s in HL). Matters as soon as assembly and C call each
 ;                other with arguments; main() takes and returns nothing.
-	.optsdcc -mz80 sdcccall(1)
+	.optsdcc	-mz80 sdcccall(1)
 
 ; _main exists, but in another file (main.c; SDCC prefixes C names with _). The assembler leaves
 ; a hole at "call _main" and the linker fills in the address. The other way round, "name::" (two
@@ -67,7 +67,7 @@
 
 	.org	0x70			; after the vectors, before _CODE at 0x0100 (must not overlap it)
 init:
-	ld	sp,#0x0000		; stack: the first push writes 0xFFFF-0xFFFE, top of common RAM
+	ld	sp, #0x0000		; stack: the first push writes 0xFFFF-0xFFFE, top of common RAM
 	call	gsinit			; set up the globals (below)
 	call	_main
 	di				; main() returned: nothing left to run, stop the CPU
@@ -97,16 +97,16 @@ init:
 ;   int speed = 9600;   is 9600       -> lives in _INITIALIZED; the 9600 itself is kept in
 ;                                        _INITIALIZER (part of kernel.bin) and gsinit copies it
 ;
-; s__X / l__X are made by the linker: start address / length in bytes of area X. 
+; s__X / l__X are made by the linker: start address / length in bytes of area X.
 ;
 ; Tools used below:
 ;   ld a,b / or a,c / jr z   the Z80 cannot test a 16-bit register for 0 directly: A = B OR C
 ;                            is 0 only when B and C are both 0, i.e. BC = 0
 ;   ldir                     copy BC bytes from (HL) to (DE): one byte, HL+1, DE+1, BC-1, repeat
 ;                            until BC = 0
-;   2$, 3$                   local labels:  they only exist between two normal labels here     
-;                            between gsinit:: and the next one), so the same numbers can be 
-;                            used again after another normal label without a clash     
+;   2$, 3$                   local labels:  they only exist between two normal labels here
+;                            between gsinit:: and the next one), so the same numbers can be
+;                            used again after another normal label without a clash
 ;
 ; gsinit is split in two areas: its body in _GSINIT, its ret alone in _GSFINAL, placed right
 ; after. If SDCC adds init code of its own to _GSINIT, it lands after ours and before the ret:
@@ -119,28 +119,28 @@ gsinit::
 	; The Z80 has no "fill" instruction. Trick: write 0 to the first byte, then LDIR with
 	; DE = HL + 1 copies each byte onto the next one, so the 0 spreads over the whole area:
 	;   [0][?][?][?]  ->  [0][0][?][?]  ->  [0][0][0][?]  ->  [0][0][0][0]
-	ld	bc,#l__DATA		; BC = number of bytes to zero
-	ld	a,b			; test BC = 0 ...
-	or	a,c			; ... A = B OR C, Z set if both are 0
-	jr	z,2$			; no such globals: go to part 2
-	ld	hl,#s__DATA		; HL = first byte of _DATA
-	ld	(hl),#0			; zero it by hand
+	ld	bc, #l__DATA		; BC = number of bytes to zero
+	ld	a, b			; test BC = 0 ...
+	or	a, c			; ... A = B OR C, Z set if both are 0
+	jr	z, 2$			; no such globals: go to part 2
+	ld	hl, #s__DATA		; HL = first byte of _DATA
+	ld	(hl), #0		; zero it by hand
 	dec	bc			; one byte done, BC = bytes left
-	ld	a,b			; test BC = 0 again
-	or	a,c
-	jr	z,2$			; it was the only byte: done
-	ld	e,l			; DE = HL ...
-	ld	d,h
+	ld	a, b			; test BC = 0 again
+	or	a, c
+	jr	z, 2$			; it was the only byte: done
+	ld	e, l			; DE = HL ...
+	ld	d, h
 	inc	de			; ... + 1: the byte right after
 	ldir				; copy (HL) -> (DE) BC times: spreads the 0
 
 	; Part 2: copy the initial values, _INITIALIZER (in kernel.bin) -> _INITIALIZED (variables).
-2$:	ld	bc,#l__INITIALIZER	; BC = number of bytes to copy
-	ld	a,b			; test BC = 0
-	or	a,c
-	jr	z,3$			; no initialised globals: done
-	ld	de,#s__INITIALIZED	; DE = destination: the variables
-	ld	hl,#s__INITIALIZER	; HL = source: the values stored in kernel.bin
+2$:	ld	bc, #l__INITIALIZER	; BC = number of bytes to copy
+	ld	a, b			; test BC = 0
+	or	a, c
+	jr	z, 3$			; no initialised globals: done
+	ld	de, #s__INITIALIZED	; DE = destination: the variables
+	ld	hl, #s__INITIALIZER	; HL = source: the values stored in kernel.bin
 	ldir				; plain copy of BC bytes
 3$:					; SDCC's own init code, if any, would land here
 
