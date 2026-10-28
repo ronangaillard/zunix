@@ -1,0 +1,66 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "make monitor",
+      "type": "shell",
+      "command": "set -o pipefail; make monitor 2>&1 | awk -f tools/diag.awk",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "never",
+        "focus": false,
+        "revealProblems": "onProblem",
+        "clear": true,
+        "showReuseMessage": false
+      },
+      "problemMatcher": {
+        "owner": "sdcc",
+        "fileLocation": [
+          "relative",
+          "${workspaceFolder}"
+        ],
+        "pattern": {
+          "regexp": "^(.+?):(\\d+):(\\d+):(\\d+):\\s+([Ee]rror|[Ww]arning)(?:\\s+\\d+)?:\\s+(.*)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "endColumn": 4,
+          "severity": 5,
+          "message": 6
+        }
+      }
+    },
+    {
+      "label": "make kernel",
+      "type": "shell",
+      "command": "set -o pipefail; make 2>&1 | awk -f tools/diag.awk",
+      "group": "build",
+      "presentation": {
+        "reveal": "never",
+        "focus": false,
+        "revealProblems": "onProblem",
+        "clear": true,
+        "showReuseMessage": false
+      },
+      "problemMatcher": {
+        "owner": "sdcc",
+        "fileLocation": [
+          "relative",
+          "${workspaceFolder}"
+        ],
+        "pattern": {
+          "regexp": "^(.+?):(\\d+):(\\d+):(\\d+):\\s+([Ee]rror|[Ww]arning)(?:\\s+\\d+)?:\\s+(.*)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "endColumn": 4,
+          "severity": 5,
+          "message": 6
+        }
+      }
+    }
+  ]
+}
