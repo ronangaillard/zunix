@@ -55,3 +55,26 @@ send-monitor: $(BUILD)/monitor.ihx
 	python3 $(SEND) $<
 
 .PHONY: monitor flash-monitor send-monitor
+
+# 	Formatter for the assembly sources (tools/asmfmt)
+ASMFMT  := tools/asmfmt/asmfmt
+ASM_SRC := $(wildcard *.s *.inc)
+
+$(ASMFMT): $(ASMFMT).c
+	cc -std=c99 -O2 -Wall -Wextra -pedantic -o $@ $<
+
+fmt: $(ASMFMT)
+	$(ASMFMT) $(ASM_SRC)
+
+fmt-check: $(ASMFMT)
+	$(ASMFMT) --check $(ASM_SRC)
+
+# 	Each tests/X.in.s must give tests/X.out.s, and formatting X.out.s must change nothing
+test-asmfmt: $(ASMFMT)
+	@for t in tools/asmfmt/tests/*.in.s; do \
+		exp=$${t%.in.s}.out.s; \
+		$(ASMFMT) < $$t | diff -u $$exp - || exit 1; \
+		$(ASMFMT) --check $$exp || { echo "$$exp: not stable"; exit 1; }; \
+	done; echo "asmfmt: all tests pass"
+
+.PHONY: fmt fmt-check test-asmfmt
