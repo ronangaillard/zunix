@@ -5,7 +5,11 @@
 
 	call	ledoff
 
-	; i think we need to setup CTC first
+	; Setup CTC
+	ld	a, #0x47		; Reset and counter mode
+	out	(CTC_A), a
+	ld	a, #1			; N = 1
+	out	(CTC_A), a
 
 	; Setup SIO
 	ld	a, #0x18		; Channel A reset
