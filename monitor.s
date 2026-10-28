@@ -5,9 +5,47 @@
 
 	call	ledoff
 
+	; i think we need to setup CTC first
+
 	; Setup SIO
 	ld	a, #0x18		; Channel A reset
 	out	(SIO_AC), a
+	ld	a, #0x18		; Channel A reset
+	out	(SIO_AC), a
+
+	ld	a, #0x04		; Select 4th register
+	out	(SIO_AC), a
+	ld	a, #0x44		; x16 ( -> 115200 bauds) with stop bit
+	out	(SIO_AC), a
+
+
+	ld	a, #0x05		; Select 5th register
+	out	(SIO_AC), a
+	ld	a, #0x68		; send 8 bits by char & enable transmit
+	out	(SIO_AC), a
+
+	ld	a, #0x03		; Select 3rd register
+	out	(SIO_AC), a
+	ld	a, #0xC1		; receive 8 bits by char & enable reception
+	out	(SIO_AC), a
+
+	; Write 'coucou'
+
+	ld	a, #'c'
+	out	(SIO_AD), a
+	ld	a, #'o'
+	out	(SIO_AD), a
+	ld	a, #'u'
+	out	(SIO_AD), a
+	ld	a, #'c'
+	out	(SIO_AD), a
+	ld	a, #'o'
+	out	(SIO_AD), a
+	ld	a, #'u'
+	out	(SIO_AD), a
+
+
+
 
 ledon:
 	ld	a, #0x81
