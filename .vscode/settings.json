@@ -1,20 +1,17 @@
 {
-  "files.associations": { "*.s": "z80-macroasm" },
+  "files.associations": { "*.s": "z80-macroasm", "*.inc": "z80-macroasm" },
   "[z80-macroasm]": {
-    "editor.defaultFormatter": "mborik.z80-macroasm",
+    "editor.defaultFormatter": "jkillian.custom-local-formatters",
     "editor.formatOnSave": true,
     "editor.insertSpaces": false,
     "editor.tabSize": 8,
-    "editor.detectIndentation": false,
-    "files.insertFinalNewline": true,
-    "files.trimTrailingWhitespace": true
+    "editor.detectIndentation": false
   },
-  "z80-macroasm.format.enabled": true,
-  "z80-macroasm.format.baseIndent": 1,
-  "z80-macroasm.format.whitespaceAfterInstruction": "tab",
-  "z80-macroasm.format.spaceAfterArgument": true,
-  "z80-macroasm.format.uppercaseKeywords": false,
-  "z80-macroasm.format.hexaNumberStyle": "no-change",
-  "z80-macroasm.format.colonAfterLabels": "no-change",
-  "z80-macroasm.format.splitInstructionsByColon": false
+  "z80-macroasm.format.enabled": false,
+  "customLocalFormatters.formatters": [
+    {
+      "command": "tools/asmfmt/asmfmt",
+      "languages": ["z80-macroasm"]
+    }
+  ]
 }
