@@ -40,21 +40,7 @@ init:
 
 	; Write 'coucou'
 
-	ld	a, #'\n'
-	call	putc
-	ld	a, #'c'
-	call	putc
-	ld	a, #'o'
-	call	putc
-	ld	a, #'u'
-	call	putc
-	ld	a, #'c'
-	call	putc
-	ld	a, #'o'
-	call	putc
-	ld	a, #'u'
-	call	putc
-	ld	a, #'\n'
+	ld	(hl), #msg_hello
 	call	putc
 
 	call	wait
@@ -65,8 +51,6 @@ init:
 
 	jp	init
 
-
-
 ledon:
 	ld	a, #0x81
 	out	(0x38), a
@@ -76,6 +60,14 @@ ledoff:
 	ld	a, #0x01
 	out	(0x38), a
 	ret
+
+puts:					; Put string on serial, (HL) is the adresse of the first character
+	ld	a, (hl)
+	or	a, a
+	ret	z
+	call	putc
+	inc	(hl)
+	jp	puts
 
 putc:
 	ld	b, a
@@ -95,3 +87,8 @@ wait:
 	or	a, b
 	jp	nz, 1$
 	ret
+
+; Strings
+
+msg_hello:
+	.asciz	"coucou\n"
