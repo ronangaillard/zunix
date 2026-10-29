@@ -54,7 +54,11 @@ SEND ?= tools/monitor-send.py
 send-monitor: $(BUILD)/monitor.ihx
 	python3 $(SEND) $<
 
-.PHONY: monitor flash-monitor send-monitor
+# 	Serial console only (resets the board: to keep a program in RAM, stay in send-monitor)
+serial:
+	python3 $(SEND)
+
+.PHONY: monitor flash-monitor send-monitor serial
 
 # 	Formatter for the assembly sources (tools/asmfmt)
 ASMFMT  := tools/asmfmt/asmfmt
