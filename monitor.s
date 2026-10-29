@@ -3,6 +3,8 @@
 	.area	_HEADER (ABS)
 	.org	0
 
+init:
+
 	call	ledoff
 
 	; Setup CTC
@@ -37,17 +39,32 @@
 
 	ld	a, #'c'
 	out	(SIO_AD), a
+	call	wait
 	ld	a, #'o'
 	out	(SIO_AD), a
+	call	wait
 	ld	a, #'u'
 	out	(SIO_AD), a
+	call	wait
 	ld	a, #'c'
 	out	(SIO_AD), a
+	call	wait
 	ld	a, #'o'
 	out	(SIO_AD), a
+	call	wait
 	ld	a, #'u'
 	out	(SIO_AD), a
+	call	wait
+	ld	a, #'\n'
+	out	(SIO_AD), a
 
+	call	wait
+	call	wait
+	call	wait
+	call	wait
+	call	wait
+
+	jp	init
 
 
 
