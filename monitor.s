@@ -8,12 +8,14 @@ init:
 	call	ledoff
 
 	; Setup CTC
+
 	ld	a, #0x47		; Reset and counter mode
 	out	(CTC_A), a
 	ld	a, #1			; N = 1
 	out	(CTC_A), a
 
 	; Setup SIO
+
 	ld	a, #0x18		; Channel A reset
 	out	(SIO_AC), a
 	ld	a, #0x18		; Channel A reset
@@ -37,26 +39,22 @@ init:
 
 	; Write 'coucou'
 
-	ld	a, #'c'
-	out	(SIO_AD), a
-	call	wait
-	ld	a, #'o'
-	out	(SIO_AD), a
-	call	wait
-	ld	a, #'u'
-	out	(SIO_AD), a
-	call	wait
-	ld	a, #'c'
-	out	(SIO_AD), a
-	call	wait
-	ld	a, #'o'
-	out	(SIO_AD), a
-	call	wait
-	ld	a, #'u'
-	out	(SIO_AD), a
-	call	wait
 	ld	a, #'\n'
-	out	(SIO_AD), a
+	call	putc
+	ld	a, #'c'
+	call	putc
+	ld	a, #'o'
+	call	putc
+	ld	a, #'u'
+	call	putc
+	ld	a, #'c'
+	call	putc
+	ld	a, #'o'
+	call	putc
+	ld	a, #'u'
+	call	putc
+	ld	a, #'\n'
+	call	putc
 
 	call	wait
 	call	wait
@@ -76,6 +74,16 @@ ledon:
 ledoff:
 	ld	a, #0x01
 	out	(0x38), a
+	ret
+
+putc:
+	ld	b, a
+1$:
+	in	a, (SIO_AC)
+	bit	#SIO_TRANSMIT_BUFFER_EMPTY_BIT, a	; Check that the transmit buffer of the SIO is empty
+	jp	z, 1$
+	ld	a, b
+	out	(SIO_AD), a
 	ret
 
 wait:

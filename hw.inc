@@ -5,6 +5,7 @@ CTC_A = 0x30				; CTC channel A
 LATCH = 0x38				; write only
 
 SIO_WR0_CHRESET = 0x18			; SIO WR0: channel reset
+SIO_TRANSMIT_BUFFER_EMPTY_BIT = 2
 
 L_ROM_DIS = 0x01
 L_LED = 0x80
