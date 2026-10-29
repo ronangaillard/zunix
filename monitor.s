@@ -43,11 +43,9 @@ init:
 	ld	(hl), #msg_hello
 	call	putc
 
-	call	wait
-	call	wait
-	call	wait
-	call	wait
-	call	wait
+	call	readline
+
+
 
 	jp	init
 
@@ -79,6 +77,28 @@ putc:
 	out	(SIO_AD), a
 	ret
 
+getc:
+	in	a, (SIO_AC)
+	bit	#SIO_RECEIVE_CHAR_AVAILABLE_BIT, a	; Did SIO receveive a character ?
+	jp	z, getc
+	in	a, (SIO_AD)
+	ret
+
+readline:
+	ld	hl, #commandbuf
+1$:
+	call	getc
+	call	putc
+	ld	(hl), a
+	inc	hl
+	cp	#0x0D
+	jp	nz, 1$
+	dec	hl
+	ld	(hl), #0x00
+	ld	a, #'\n'
+	call	putc
+	ret
+
 wait:
 	ld	bc, #0
 1$:
@@ -92,3 +112,11 @@ wait:
 
 msg_hello:
 	.asciz	"coucou\n"
+
+; Vars in RAM
+
+	.area	_DATA (ABS)
+	.org	0x8000
+COMMAND_MAX_LENGTH = 64
+commandbuf:
+	.ds	COMMAND_MAX_LENGTH + 1	;
