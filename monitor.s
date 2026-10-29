@@ -4,6 +4,7 @@
 	.org	0
 
 init:
+	ld	sp, #0x0000		; set the stack at the top of the RAM
 
 	call	ledoff
 
