@@ -3,6 +3,8 @@
 	.area	_HEADER (ABS)
 	.org	0
 
+	di
+
 init:
 	ld	sp, #0x0000		; set the stack at the top of the RAM
 
@@ -16,6 +18,15 @@ init:
 	out	(CTC_A), a
 
 	; Setup SIO
+
+1$:					; wait for previous transmission to be finished
+	ld	a, #1			; select RR1
+	out	(SIO_AC), a
+	in	a, (SIO_AC)
+	bit	0, a			; all sent?
+	jr	z, 1$
+
+	ld	a, #0x18		; Channel A reset
 
 	ld	a, #0x18		; Channel A reset
 	out	(SIO_AC), a
@@ -38,16 +49,17 @@ init:
 	ld	a, #0xC1		; receive 8 bits by char & enable reception
 	out	(SIO_AC), a
 
+start:
 	; Write 'coucou'
 
-	ld	(hl), #msg_hello
-	call	putc
+	ld	hl, #msg_hello
+	call	puts
 
 	call	readline
 
 
 
-	jp	init
+	jp	start
 
 ledon:
 	ld	a, #0x81
@@ -64,7 +76,7 @@ puts:					; Put string on serial, (HL) is the adresse of the first character
 	or	a, a
 	ret	z
 	call	putc
-	inc	(hl)
+	inc	hl
 	jp	puts
 
 putc:
@@ -88,14 +100,19 @@ readline:
 	ld	hl, #commandbuf
 1$:
 	call	getc
+	cp	#0x0D
+	jp	z, 2$
+	cp	#0x0A
+	jp	z, 2$
 	call	putc
 	ld	(hl), a
 	inc	hl
-	cp	#0x0D
-	jp	nz, 1$
-	dec	hl
+	jp	1$
+2$:
 	ld	(hl), #0x00
-	ld	a, #'\n'
+	ld	a, #0x0D
+	call	putc
+	ld	a, #0x0A
 	call	putc
 	ret
 
@@ -111,7 +128,7 @@ wait:
 ; Strings
 
 msg_hello:
-	.asciz	"coucou\n"
+	.asciz	"coucou\r\n"
 
 ; Vars in RAM
 
