@@ -1,4 +1,4 @@
-; hw.inc — I/O map of the motherboard (see doc/io_map.md)
+; hw.inc — I/O map of the motherboard
 SIO_AD = 0x20				; SIO channel A data
 SIO_AC = 0x21				; SIO channel A control
 CTC_A = 0x30				; CTC channel A

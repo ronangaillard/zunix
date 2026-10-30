@@ -21,48 +21,18 @@ $(BUILD)/kernel.bin: $(OBJ)
 
 .PHONY: all
 
-ROM_CHIP   ?= SST39SF040
-ROM_COPIES ?= 4
+# 	The monitor lives in mon/ (own Makefile)
+monitor:
+	$(MAKE) -C mon
 
-monitor: $(BUILD)/monitor.rom
-
-$(BUILD)/monitor.rel: monitor.s
-	mkdir -p $(BUILD)
-	sdasz80 -plosgff -o $@ $<
-
-$(BUILD)/monitor.ihx: $(BUILD)/monitor.rel
-	sdldz80 -i $@ $<
-
-$(BUILD)/monitor.bin: $(BUILD)/monitor.ihx
-	makebin -p $< $@
-
-# 	On rev A board A17 and A18 are left floating, so we need to 
-#	copy the monitor at 4 different places so that A17 and A18 don't bother
-#	This is fixed in rev B, so once I receive revB this is not needed anymore
-$(BUILD)/monitor.rom: $(BUILD)/monitor.bin
-	python3 -c "import sys; d = open(sys.argv[1], 'rb').read(); \
-	assert len(d) <= 0x20000, 'monitor > 128 KB'; \
-	open(sys.argv[2], 'wb').write((d + b'\xff' * (0x20000 - len(d))) * $(ROM_COPIES))" $< $@
-	@echo "$@: $$(wc -c < $<) bytes of code, image for $(ROM_CHIP)"
-
-flash-monitor: $(BUILD)/monitor.rom
-	minipro -p "$(ROM_CHIP)" -w $<
-
-# 	Sends the new build to the monitor and then runs it 
-SEND ?= tools/monitor-send.py
-
-send-monitor: $(BUILD)/monitor.ihx
-	python3 $(SEND) $<
-
-# 	Serial console only (resets the board: to keep a program in RAM, stay in send-monitor)
-serial:
-	python3 $(SEND)
+flash-monitor send-monitor serial:
+	$(MAKE) -C mon $(patsubst %-monitor,%,$@)
 
 .PHONY: monitor flash-monitor send-monitor serial
 
 # 	Formatter for the assembly sources (tools/asmfmt)
 ASMFMT  := tools/asmfmt/asmfmt
-ASM_SRC := $(wildcard *.s *.inc)
+ASM_SRC := $(wildcard *.s *.inc mon/*.s mon/*.inc)
 
 $(ASMFMT): $(ASMFMT).c
 	cc -std=c99 -O2 -Wall -Wextra -pedantic -o $@ $<

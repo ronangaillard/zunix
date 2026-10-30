@@ -19,7 +19,7 @@
       "problemMatcher": {
         "owner": "sdcc",
         "fileLocation": [
-          "relative",
+          "autoDetect",
           "${workspaceFolder}"
         ],
         "pattern": {
@@ -48,7 +48,7 @@
       "problemMatcher": {
         "owner": "sdcc",
         "fileLocation": [
-          "relative",
+          "autoDetect",
           "${workspaceFolder}"
         ],
         "pattern": {

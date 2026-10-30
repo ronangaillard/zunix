@@ -1,2 +1,7 @@
+# build outputs (kernel and mon/)
 build/
 tools/asmfmt/asmfmt
+
+# system and editor leftovers
+.DS_Store
+__pycache__/
