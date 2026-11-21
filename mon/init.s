@@ -46,4 +46,7 @@ init::
 	ld	a, #0xC1		; receive 8 bits by char & enable reception
 	out	(SIO_AC), a
 
+	; Setup CF
+	call	init_storage
+
 	jp	main

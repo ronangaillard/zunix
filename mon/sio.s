@@ -16,6 +16,41 @@ puts::
 	inc	hl
 	jp	puts
 
+; puthex: send HL as 4 hexadecimal digits
+;   in:  HL = number
+;   destroys: A, B
+puthex::
+	ld	a, h
+	call	puthex8
+	ld	a, l
+	call	puthex8
+	ret
+
+; puthex8: send A as 2 hexadecimal digits
+;   in:  A = number
+;   destroys: A, B
+puthex8::
+	push	af
+	rrca
+	rrca
+	rrca
+	rrca
+	call	1$
+	pop	af
+	call	1$
+	ret
+1$:
+	and	a, #0x0F
+	cp	#10
+	jr	c, 2$			; jump when a < 10
+	add	a, #'A' - 10
+	call	putc
+	ret
+2$:
+	add	a, #'0'
+	call	putc
+	ret
+
 ; putc: send one character (waits until the transmit buffer is empty)
 ;   in:  A = character
 ;   out: A = character

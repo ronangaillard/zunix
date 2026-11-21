@@ -26,15 +26,31 @@ no_command_found:
 	ret
 
 find_command:
-	ld	hl, #commandbuf
-	ld	de, #name_help
-	call	compare_strings
-	jr	nz, 1$			; no command found
-	call	cmd_help		; else call associated command
-	ret
+	ld	hl, #commands
 1$:
-	call	no_command_found
-	ret
+	ld	e, (hl)
+	inc	hl
+	ld	d, (hl)			; (de) points to command name
+	inc	hl
+	ld	a, d
+	or	a, e
+	jp	z, no_command_found	; end of table if e = d = 0
+	push	hl
+	ld	hl, #commandbuf
+	call	compare_strings
+	pop	hl
+	jr	z, 2$			; command name found, run it
+	inc	hl
+	inc	hl
+	jr	1$
+2$:
+	ld	a, (hl)
+	inc	hl
+	ld	h, (hl)
+	ld	l, a
+	jp	(hl)
+
+
 
 ; compare_strings: compare two strings
 ;   in:  HL = address of the first character of the first string
