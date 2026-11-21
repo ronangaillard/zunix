@@ -3,6 +3,7 @@ SIO_AD = 0x20				; SIO channel A data
 SIO_AC = 0x21				; SIO channel A control
 CTC_A = 0x30				; CTC channel A
 LATCH = 0x38				; write only
+CF_CARD = 0x40
 
 SIO_WR0_CHRESET = 0x18			; SIO WR0: channel reset
 SIO_TRANSMIT_BUFFER_EMPTY_BIT = 2
