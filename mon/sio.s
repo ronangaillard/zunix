@@ -51,6 +51,42 @@ puthex8::
 	call	putc
 	ret
 
+; putdec: send HL as 5 decimal digits (unsigned, with leading zeros)
+;   in:  HL = number
+;   out: HL = 0
+;   destroys: A, B, DE
+putdec::
+	ld	de, #10000
+	call	putten
+	ld	de, #1000
+	call	putten
+	ld	de, #100
+	call	putten
+	ld	de, #10
+	call	putten
+	ld	de, #1
+	call	putten
+	ret
+
+; putten: send one decimal digit: how many times DE fits in HL
+;   in:  HL = number (less than 10 * DE)
+;        DE = power of ten
+;   out: HL = remainder
+;   destroys: A, B
+putten:
+	ld	a, #0			; A = digit
+	jr	2$
+1$:
+	inc	a			; DE did fit: count it
+2$:
+	or	a, a			; clear carry flag
+	sbc	hl, de
+	jr	nc, 1$			; jump when DE did fit in HL
+	add	a, #'0'
+	call	putc
+	add	hl, de			; undo the last subtraction, which went below 0
+	ret
+
 ; putc: send one character (waits until the transmit buffer is empty)
 ;   in:  A = character
 ;   out: A = character
