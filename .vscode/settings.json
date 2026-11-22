@@ -8,6 +8,7 @@
     "editor.detectIndentation": false
   },
   "z80-macroasm.format.enabled": false,
+  "z80-macroasm.seekSymbolsThroughWorkspace": true,
   "customLocalFormatters.formatters": [
     {
       "command": "tools/asmfmt/asmfmt",

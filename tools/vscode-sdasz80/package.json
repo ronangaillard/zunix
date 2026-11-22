@@ -1,0 +1,11 @@
+{
+  "name": "sdasz80-help",
+  "displayName": "sdasz80 help",
+  "description": "Z80 instruction documentation on hover, go to definition of 1$ labels",
+  "version": "0.1.1",
+  "publisher": "local",
+  "license": "UNLICENSED",
+  "engines": { "vscode": "^1.70.0" },
+  "main": "./extension.js",
+  "activationEvents": ["onLanguage:z80-macroasm"]
+}
