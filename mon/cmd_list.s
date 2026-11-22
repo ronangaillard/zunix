@@ -1,20 +1,8 @@
 ; list command: read the superblock of the Fuzix file system and show its size
 
-V7_MAGIC = 0x31C6			; 12742
-
-; Superblock (block 1) offsets
-OFFSET_MAGIC = 0			; magic number (2 bytes)
-OFFSET_FSIZE = 4			; size of the file system in blocks (2 bytes)
 
 	.area	_DATA
 
-SECTOR_SIZE = 512
-
-sectorbuf:
-	.ds	SECTOR_SIZE
-
-lba:
-	.ds	4			; sector number, little-endian
 
 	.area	_CODE
 
@@ -22,37 +10,52 @@ lba:
 ; hexadecimal
 ;   destroys: A, BC, DE, HL
 cmd_list::
-	ld	hl, #1			; sector 1: superblock
-	ld	(lba), hl
-	ld	hl, #0
-	ld	(lba + 2), hl
-	ld	de, #lba
-	ld	hl, #sectorbuf
-	call	read_sector
-
-	ld	hl, (sectorbuf + OFFSET_MAGIC)
-	ld	de, #V7_MAGIC
-	or	a, a			; clear carry flag
-	sbc	hl, de
-	jr	z, 1$
-	ld	hl, #msg_bad_filesystem
-	call	puts
+	call	mount
+	or	a, a
+	jp	nz, 1$
+	call	mount_error
 	ret
-1$:					; v7 file system detected
-	ld	hl, #msg_good_filesystem
+1$:
+	ld	hl, #msg_mount_success
 	call	puts
 
-	ld	hl, #msg_sector_count_start
-	call	puts
-	ld	hl, (sectorbuf + OFFSET_FSIZE)	; blocks are 512 bytes: one block = one sector
-	call	puthex
-	ld	hl, #msg_sector_count_middle
-	call	puts
-	ld	hl, (sectorbuf + OFFSET_FSIZE)
-	call	putdec
-	ld	hl, #msg_sector_count_end
+	; inodes
+	call	inode_first
+
+2$:
+	call	print_inode
+	call	inode_next
+	jp	nc, 2$
+
+
+	ret
+
+mount_error:
+	ld	hl, #msg_mount_error
 	call	puts
 	ret
+msg_mount_error:
+	.asciz	"Mount error, check if CF is inserted and if CF is formatted with V7 file system\r\n"
+msg_mount_success:
+	.asciz	"Mount success\r\n"
+
+print_inode:
+	ld	hl, #msg_inode_found
+	call	puts
+	ret
+msg_inode_found:
+	.asciz	"inode found\r\n"
+
+file_found:
+	ld	hl, #msg_file_found
+	call	puts
+	ret
+
+folder_found:
+	ld	hl, #msg_folder_found
+	call	puts
+	ret
+
 
 msg_bad_filesystem:
 	.asciz	"CF disk is not formatted with V7 file system\r\n"
@@ -64,4 +67,9 @@ msg_sector_count_start:
 msg_sector_count_middle:
 	.asciz	" ("
 msg_sector_count_end:
-	.asciz	")\r\n"
+	.asciz	" Ko)\r\n"
+
+msg_file_found:
+	.asciz	"file found\r\n"
+msg_folder_found:
+	.asciz	"folder found\r\n"
