@@ -9,10 +9,12 @@ OFFSET_FSIZE = 4			; size of the file system in blocks (2 bytes)
 
 ; Inode offsets
 OFFSET_MODE_TYPE = 1			; high byte of the mode: type of the file, 0 if the inode is free
+OFFSET_ADDRESS = 24			; sector numbers of the contents (20 * 2 bytes)
 
 ; Sizes in bytes
 SECTOR_SIZE = 512
 INODE_SIZE = 64
+FOLDER_ENTRY_SIZE == 32			; == : also used in cmd_list.s
 
 	.area	_DATA
 
@@ -25,7 +27,7 @@ inode_table_end:
 inodebuf::
 	.ds	INODE_SIZE		; last inode read
 
-sectorbuf:
+sectorbuf::
 	.ds	SECTOR_SIZE		; last sector read
 
 lba:
@@ -131,4 +133,17 @@ inode_next::
 	ret
 1$:
 	scf				; no more inodes
+	ret
+
+; dir_first: read the first sector of the directory whose inode is in inodebuf
+;   out: sectorbuf = first 16 entries of the directory
+;   destroys: A, BC, DE, HL
+dir_first::
+	ld	hl, (inodebuf + OFFSET_ADDRESS)	; first sector of the contents
+	ld	(lba), hl
+	ld	hl, #0
+	ld	(lba + 2), hl
+	ld	de, #lba
+	ld	hl, #sectorbuf
+	call	read_sector
 	ret
