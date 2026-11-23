@@ -7,6 +7,8 @@ commands::
 	.dw	cmd_list
 	.dw	name_load
 	.dw	cmd_load
+	.dw	name_run
+	.dw	cmd_run
 	.dw	0
 
 name_help::
@@ -17,3 +19,6 @@ name_list::
 
 name_load::
 	.asciz	"load"
+
+name_run::
+	.asciz	"run"
