@@ -78,6 +78,6 @@ compare_strings:
 
 
 msg_hello:
-	.asciz	"coucou\r\n"
+	.asciz	"Z80 bootloader v0.1\r\n by Ronan Gaillard\r\n\r\nrun help for more info\r\n"
 msg_no_command_found:
 	.asciz	"no command named "
