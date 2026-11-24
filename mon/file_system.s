@@ -147,3 +147,52 @@ dir_first::
 	ld	hl, #sectorbuf
 	call	read_sector
 	ret
+
+; find_kernel_inode: look for the file "kernel.bin" in the root directory (first sector of the
+; directory only: 16 entries); call mount then inode_first first, so that inodebuf = root inode
+;   out: carry = 0: DE = inode number of the file
+;        carry = 1: file not found
+;   destroys: A, BC, HL
+find_kernel_inode::
+	call	dir_first
+	ld	hl, #sectorbuf
+2$:
+	push	hl			; beginning of the entry
+	ld	e, (hl)
+	inc	hl
+	ld	d, (hl)			; DE = inode number
+	inc	hl			; HL = name
+	ld	a, d
+	or	a, e
+	jp	nz, 3$
+	jp	4$			; free entry (inode number = 0): skip it
+3$:
+	push	de
+	ld	de, #kernel_file_name
+	call	compare_strings
+	jp	z, kernel_inode_found
+	pop	de
+
+4$:
+	pop	hl			; beginning of the entry
+	ld	de, #FOLDER_ENTRY_SIZE
+	add	hl, de			; jump to next entry
+
+	; end of the sector ?
+	ld	de, #sectorbuf + 512
+	or	a, a			; clear carry flag
+	sbc	hl, de
+	add	hl, de			; restore HL, carry does not change
+	jr	c, 2$			; jump when HL < end of the sector
+	scf				; set carry flag : kernel not found
+	ret
+
+kernel_inode_found:
+	pop	de			; DE contains inode number
+	pop	hl			; HL was pushed so pop it here
+
+	or	a, a			; clears carry flag
+	ret
+
+kernel_file_name:
+	.asciz	"kernel.bin"

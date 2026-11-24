@@ -56,8 +56,8 @@ find_command:
 ;   in:  HL = address of the first character of the first string
 ;   in:  DE = address of the first character of the second string
 ;   out: Z = 0 if different, 1 if same string
-;   destroys: A, HL, DE
-compare_strings:
+;   destroys: A, B, DE, HL
+compare_strings::
 	ld	b, (hl)
 	ld	a, (de)
 	cp	b
