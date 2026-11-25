@@ -24,6 +24,9 @@ lba:
 dir_entry:
 	.ds	2			; next entry for dir_next (in sectorbuf)
 
+dir_find_name:
+	.ds	2			; name dir_find looks for
+
 	.area	_CODE
 
 ; mount: check that the CF card holds a Fuzix file system and find its inode table
@@ -180,6 +183,28 @@ dir_next::
 	ld	(dir_entry), hl		; next entry
 	pop	hl
 	or	a, a			; clear carry flag: entry found
+	ret
+
+; dir_find: look for a name in the directory whose inode is in inodebuf (first sector of the
+; directory only: 16 entries), and read the inode of the file
+;   in:  DE = name, ended by 0
+;   out: carry = 0: inodebuf = inode of the file, DE = its number
+;        carry = 1: no such name, or read error
+;   destroys: A, BC, HL
+dir_find::
+	ld	(dir_find_name), de	; dir_first and dir_next destroy DE
+	call	dir_first
+	ret	c			; read error
+1$:
+	call	dir_next
+	ret	c			; no more entries: no such name
+	push	de			; inode number
+	ld	de, (dir_find_name)
+	call	compare_strings
+	pop	de
+	jr	nz, 1$			; not this one
+
+	call	inode_read		; carry: result of inode_read, returned as is
 	ret
 
 ; read_block: read one block (one block = one sector) of the file system
