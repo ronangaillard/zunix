@@ -14,10 +14,10 @@ cmd_load::
 	ld	hl, #msg_waiting_for_program
 	call	puts
 
-wait_line_start:
+1$:					; wait for the start of a line
 	call	getc
 	cp	a, #':'
-	jp	nz, wait_line_start
+	jp	nz, 1$
 
 	call	get_hex8
 	ld	b, a			; B = line length
@@ -31,24 +31,24 @@ wait_line_start:
 
 	ld	d, a			; D = type
 	cp	a, #HEX_END_OF_FILE
-	jp	z, read_line_end	; end of file record: no data
+	jp	z, 4$			; end of file record: no data
 
 	ld	a, b
 	or	a, a
-	jp	z, read_line_end	; empty record: no data (dec b would loop 256 times)
+	jp	z, 4$			; empty record: no data (dec b would loop 256 times)
 
-read_next_byte:
+2$:					; data bytes
 	call	get_hex8
 	inc	d
 	dec	d			; Z = 1 if HEX_DATA (0), A unchanged
-	jp	nz, 1$			; other record type: skip its bytes
+	jp	nz, 3$			; other record type: skip its bytes
 	ld	(hl), a
 	inc	hl
-1$:
+3$:
 	dec	b
-	jp	nz, read_next_byte
+	jp	nz, 2$
 
-read_line_end:
+4$:					; end of the line
 	call	get_hex8		; checksum
 
 	ld	a, #'.'
@@ -56,7 +56,7 @@ read_line_end:
 
 	ld	a, d
 	cp	a, #HEX_END_OF_FILE
-	jp	nz, wait_line_start
+	jp	nz, 1$
 
 	call	newline
 	ret

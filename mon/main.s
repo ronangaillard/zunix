@@ -5,13 +5,13 @@
 main::
 	ld	hl, #msg_hello
 	call	puts
-interpreter_start:
+1$:					; prompt, read a line, run it
 	ld	a, #'>'
 	call	putc
 	call	readline
 
 	call	find_command
-	jp	interpreter_start
+	jp	1$
 
 ; no_command_found: show that the line typed is not a command
 ;   destroys: A, B, HL
