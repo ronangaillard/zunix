@@ -150,9 +150,11 @@ read_block:
 	jp	read_sector		; read_sector returns to our caller
 
 ; load_file_to_ram: read the file whose inode is in inodebuf into RAM, sector after sector (18 direct
-; blocks, then the single indirect block: files up to 137 KB); stops at the first empty block (0)
-; for now the destination is always 0x0000; sectorbuf is overwritten (indirect table)
-;   out: HL = address after the last byte read
+; blocks, then the single indirect block); stops at the first empty block (0)
+; for now the destination is always 0x0000; the file must end below the monitor (s__CODE, 0xE000:
+; 56 KB); sectorbuf is overwritten (indirect table)
+;   out: carry = 0: HL = address after the last byte read
+;        carry = 1: the file does not fit below the monitor (only its beginning was loaded)
 ;   destroys: A, BC, DE
 load_file_to_ram::
 	ld	b, #0			; B = number of direct addresses blocs
@@ -176,8 +178,9 @@ read_loop:
 
 	pop	hl			; HL = destination
 	push	bc
-	call	read_block
+	call	load_block
 	pop	bc
+	ret	c			; no room left: the stack is empty, return the carry
 
 	push	hl
 	inc	b
@@ -226,7 +229,8 @@ indirect_addressing_loop:
 	jp	z, end_of_file
 
 	pop	hl			; HL = destination
-	call	read_block
+	call	load_block
+	ret	c			; no room left: the stack is empty, return the carry
 	push	hl			; destination of the next sector
 
 	jp	indirect_addressing_loop
@@ -234,6 +238,25 @@ indirect_addressing_loop:
 
 end_of_file:
 	pop	hl
+	or	a, a			; clear carry flag: whole file loaded
+	ret
+
+; load_block: read one block of the file at HL, if it fits below the monitor
+; (HL is always a multiple of 512, and s__CODE too: comparing the high bytes is enough)
+;   in:  DE = block number
+;        HL = destination
+;   out: carry = 0: HL = address just after the block
+;        carry = 1: no room for this block (HL unchanged)
+;   destroys: A, BC, DE
+load_block:
+	ld	a, h
+	cp	a, #>s__CODE		; high byte of the monitor address, from the linker
+	jr	nc, 1$			; jump when HL >= s__CODE: no room for this block
+	call	read_block
+	or	a, a			; clear carry flag: block read
+	ret
+1$:
+	scf				; no room for this block
 	ret
 
 

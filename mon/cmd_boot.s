@@ -17,10 +17,16 @@ cmd_boot::
 	jp	c, no_kernel_found
 
 	call	load_file_to_ram
+	jp	c, kernel_too_big
 	jp	0x0000			; start the kernel
 
 no_kernel_found:
 	ld	hl, #msg_no_kernel_found
+	call	puts
+	ret
+
+kernel_too_big:
+	ld	hl, #msg_kernel_too_big
 	call	puts
 	ret
 
@@ -77,3 +83,6 @@ kernel_file_name:
 
 msg_no_kernel_found:
 	.asciz	"no kernel found on CF card\r\n"
+
+msg_kernel_too_big:
+	.asciz	"kernel.bin is too big: it must fit in 0x0000-0xDFFF\r\n"
