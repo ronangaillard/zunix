@@ -38,9 +38,11 @@ init::
 	bit	0, a			; all sent?
 	jr	z, 1$
 
-	ld	a, #SIO_WR0_CHRESET	; channel A reset
+	; channel A reset, sent twice on purpose: if a register was selected (WR0 pointer) but never
+	; written, for example after a reset in the middle of a setup, the first write goes to that
+	; register and moves the pointer back to WR0; the second one then reaches WR0
+	ld	a, #SIO_WR0_CHRESET
 	out	(SIO_AC), a
-	ld	a, #SIO_WR0_CHRESET	; channel A reset
 	out	(SIO_AC), a
 
 	ld	a, #0x04		; select 4th register
