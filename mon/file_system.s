@@ -1,3 +1,4 @@
+	.include	"hw.inc"
 	.include	"file_system.inc"
 
 	.area	_DATA
@@ -89,7 +90,7 @@ inode_next::
 	; address of the inode = sectorbuf + (number modulo 8) * 64
 	ld	hl, (inode_next_number)
 	ld	a, l
-	and	a, #0b0000000000000111	; number of the inode in the sector (0-7)
+	and	a, #0x07		; number of the inode in the sector (0-7)
 	ld	l, a
 	ld	h, #0
 	add	hl, hl
@@ -205,7 +206,7 @@ read_block:
 load_file_to_ram::
 	ld	b, #0			; B = offset of the entry in the direct table (2 bytes each)
 
-	ld	hl, #0
+	ld	hl, #KERNEL_ADDR
 	push	hl			; HL = destination of read bytes in RAM
 read_loop:
 	ld	hl, #inodebuf + OFFSET_ADDRESS	; first sector of the content

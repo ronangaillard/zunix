@@ -1,5 +1,9 @@
 ; load command: receive a program (Intel HEX) from the console
 
+; Intel HEX record types
+HEX_DATA = 0x00
+HEX_END_OF_FILE = 0x01
+
 	.area	_CODE
 
 ; cmd_load: receive Intel HEX lines and write their data to RAM, until the end of file record
@@ -26,7 +30,7 @@ wait_line_start:
 	call	get_hex8		; type
 
 	ld	d, a			; D = type
-	cp	a, #0x01
+	cp	a, #HEX_END_OF_FILE
 	jp	z, read_line_end	; end of file record: no data
 
 	ld	a, b
@@ -36,7 +40,7 @@ wait_line_start:
 read_next_byte:
 	call	get_hex8
 	inc	d
-	dec	d			; Z = 1 if type 00 (data), A unchanged
+	dec	d			; Z = 1 if HEX_DATA (0), A unchanged
 	jp	nz, 1$			; other record type: skip its bytes
 	ld	(hl), a
 	inc	hl
@@ -51,7 +55,7 @@ read_line_end:
 	call	putc
 
 	ld	a, d
-	cp	a, #0x01		; type 0x01 is end of file
+	cp	a, #HEX_END_OF_FILE
 	jp	nz, wait_line_start
 
 	call	newline

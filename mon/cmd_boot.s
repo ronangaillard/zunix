@@ -1,5 +1,6 @@
 ; boot command: load the kernel ("kernel.bin" in the root directory of the CF card) and start it
 
+	.include	"hw.inc"
 	.include	"file_system.inc"
 
 	.area	_CODE
@@ -18,7 +19,7 @@ cmd_boot::
 
 	call	load_file_to_ram
 	jp	c, kernel_load_error
-	jp	0x0000			; start the kernel
+	jp	KERNEL_ADDR		; start the kernel
 
 ; no_kernel_found: show that there is no "kernel.bin" in the root directory
 ;   destroys: A, B, HL

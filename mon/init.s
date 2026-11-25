@@ -32,10 +32,10 @@ init::
 	; Setup SIO
 
 1$:					; wait for previous transmission to be finished
-	ld	a, #1			; select RR1
+	ld	a, #SIO_RR1		; select RR1
 	out	(SIO_AC), a
 	in	a, (SIO_AC)
-	bit	0, a			; all sent?
+	bit	#SIO_RR1_ALL_SENT_BIT, a	; all sent?
 	jr	z, 1$
 
 	; channel A reset, sent twice on purpose: if a register was selected (WR0 pointer) but never
@@ -45,17 +45,17 @@ init::
 	out	(SIO_AC), a
 	out	(SIO_AC), a
 
-	ld	a, #0x04		; select 4th register
+	ld	a, #SIO_WR4		; select WR4
 	out	(SIO_AC), a
 	ld	a, #0x44		; x16 ( -> 115200 bauds) with stop bit
 	out	(SIO_AC), a
 
-	ld	a, #0x05		; select 5th register
+	ld	a, #SIO_WR5		; select WR5
 	out	(SIO_AC), a
 	ld	a, #0x68		; send 8 bits by char & enable transmit
 	out	(SIO_AC), a
 
-	ld	a, #0x03		; select 3rd register
+	ld	a, #SIO_WR3		; select WR3
 	out	(SIO_AC), a
 	ld	a, #0xC1		; receive 8 bits by char & enable reception
 	out	(SIO_AC), a
