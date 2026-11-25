@@ -1,5 +1,7 @@
 ; Help commande to list available commands
 
+	.area	_CODE
+
 cmd_help::
 	ld	hl, #msg_help
 	call	puts

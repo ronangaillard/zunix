@@ -1,5 +1,7 @@
 ; Available monitor commands
 
+	.area	_CODE
+
 commands::
 	.dw	name_help
 	.dw	cmd_help
