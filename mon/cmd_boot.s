@@ -17,7 +17,7 @@ cmd_boot::
 	jp	c, no_kernel_found
 
 	call	load_file_to_ram
-	jp	c, kernel_too_big
+	jp	c, kernel_load_error
 	jp	0x0000			; start the kernel
 
 no_kernel_found:
@@ -25,8 +25,8 @@ no_kernel_found:
 	call	puts
 	ret
 
-kernel_too_big:
-	ld	hl, #msg_kernel_too_big
+kernel_load_error:
+	ld	hl, #msg_kernel_load_error
 	call	puts
 	ret
 
@@ -34,10 +34,11 @@ kernel_too_big:
 ; directory only: 16 entries) and read its inode; call mount then inode_first first, so that
 ; inodebuf = root inode
 ;   out: carry = 0: inodebuf = inode of the file, DE = its number
-;        carry = 1: file not found, or its inode could not be read
+;        carry = 1: file not found, or read error
 ;   destroys: A, BC, HL
 find_kernel_inode::
 	call	dir_first
+	ret	c			; read error
 	ld	hl, #sectorbuf
 2$:
 	push	hl			; beginning of the entry
@@ -84,5 +85,5 @@ kernel_file_name:
 msg_no_kernel_found:
 	.asciz	"no kernel found on CF card\r\n"
 
-msg_kernel_too_big:
-	.asciz	"kernel.bin is too big: it must fit in 0x0000-0xDFFF\r\n"
+msg_kernel_load_error:
+	.asciz	"kernel.bin could not be loaded: read error, or bigger than 0x0000-0xDFFF\r\n"

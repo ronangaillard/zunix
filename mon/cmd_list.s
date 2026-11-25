@@ -12,6 +12,7 @@ cmd_list::
 	call	inode_first		; inode 1: root directory
 	jp	c, mount_error		; no used inode: the file system is broken
 	call	dir_first
+	jp	c, mount_error		; read error
 
 	; show each entry: inode number (2 bytes), name (30 bytes)
 	ld	hl, #sectorbuf

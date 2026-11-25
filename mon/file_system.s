@@ -24,12 +24,13 @@ lba:
 
 ; mount: check that the CF card holds a Fuzix file system and find its inode table
 ;   out: carry = 0: file system found
-;        carry = 1: no Fuzix file system (wrong magic number)
+;        carry = 1: no card, read error, or no Fuzix file system (wrong magic number)
 ;   destroys: A, BC, DE, HL
 mount::
 	ld	de, #1			; block 1: superblock
 	ld	hl, #sectorbuf
 	call	read_block
+	ret	c			; no card or read error
 
 	ld	hl, (sectorbuf + OFFSET_MAGIC)
 	ld	de, #V7_MAGIC
@@ -55,7 +56,7 @@ inode_first::
 
 ; inode_next: read the next used inode of the table into inodebuf
 ;   out: carry = 0: inodebuf = inode, DE = inode number
-;        carry = 1: no more inodes
+;        carry = 1: no more inodes, or read error
 ;   destroys: A, BC, HL
 inode_next::
 	; sector of the inode = number / 8 + 2 (8 inodes per sector)
@@ -80,6 +81,7 @@ inode_next::
 	ex	de, hl
 	ld	hl, #sectorbuf
 	call	read_block
+	ret	c			; read error
 
 	; address of the inode = sectorbuf + (number modulo 8) * 64
 	ld	hl, (inode_next_number)
@@ -129,18 +131,20 @@ inode_read::
 	ret
 
 ; dir_first: read the first sector of the directory whose inode is in inodebuf
-;   out: sectorbuf = first 16 entries of the directory
+;   out: carry = 0: sectorbuf = first 16 entries of the directory
+;        carry = 1: read error
 ;   destroys: A, BC, DE, HL
 dir_first::
 	ld	de, (inodebuf + OFFSET_ADDRESS)	; first sector of the contents
 	ld	hl, #sectorbuf
-	call	read_block
+	call	read_block		; carry: result of read_block, returned as is
 	ret
 
 ; read_block: read one block (one block = one sector) of the file system
 ;   in:  DE = block number (16 bits, like in the inodes)
 ;        HL = address of the destination buffer (512 bytes)
-;   out: HL = address just after the buffer
+;   out: carry = 0: HL = address just after the buffer
+;        carry = 1: read error (see read_sector)
 ;   destroys: A, BC, DE
 read_block:
 	ld	(lba), de
@@ -154,7 +158,8 @@ read_block:
 ; for now the destination is always 0x0000; the file must end below the monitor (s__CODE, 0xE000:
 ; 56 KB); sectorbuf is overwritten (indirect table)
 ;   out: carry = 0: HL = address after the last byte read
-;        carry = 1: the file does not fit below the monitor (only its beginning was loaded)
+;        carry = 1: the file does not fit below the monitor, or read error (only its beginning
+;                   was loaded)
 ;   destroys: A, BC, DE
 load_file_to_ram::
 	ld	b, #0			; B = number of direct addresses blocs
@@ -203,6 +208,7 @@ indirect_addressing_table_read:
 
 	ld	hl, #sectorbuf		; sectorbuf will contain indirect address table
 	call	read_block
+	jr	c, read_error
 	ld	hl, #sectorbuf
 	ld	(sector_pointer), hl	; first entry of the indirect table
 
@@ -241,19 +247,23 @@ end_of_file:
 	or	a, a			; clear carry flag: whole file loaded
 	ret
 
+read_error:
+	pop	hl			; destination
+	scf				; read error
+	ret
+
 ; load_block: read one block of the file at HL, if it fits below the monitor
 ; (HL is always a multiple of 512, and s__CODE too: comparing the high bytes is enough)
 ;   in:  DE = block number
 ;        HL = destination
 ;   out: carry = 0: HL = address just after the block
-;        carry = 1: no room for this block (HL unchanged)
+;        carry = 1: no room for this block, or read error (HL unchanged)
 ;   destroys: A, BC, DE
 load_block:
 	ld	a, h
 	cp	a, #>s__CODE		; high byte of the monitor address, from the linker
 	jr	nc, 1$			; jump when HL >= s__CODE: no room for this block
-	call	read_block
-	or	a, a			; clear carry flag: block read
+	call	read_block		; carry: result of read_block, returned as is
 	ret
 1$:
 	scf				; no room for this block
