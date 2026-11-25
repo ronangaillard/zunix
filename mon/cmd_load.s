@@ -54,11 +54,7 @@ read_line_end:
 	cp	a, #0x01		; type 0x01 is end of file
 	jp	nz, wait_line_start
 
-	ld	a, #'\r'
-	call	putc
-	ld	a, #'\n'
-	call	putc
-
+	call	newline
 	ret
 
 

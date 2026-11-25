@@ -30,9 +30,5 @@ cmd_list::
 	dec	c
 	jr	nz, 2$
 3$:
-	ld	hl, #msg_line_return	; end of entry
-	call	puts
+	call	newline			; end of entry
 	jr	1$
-
-msg_line_return:
-	.asciz	"\r\n"

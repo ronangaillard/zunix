@@ -101,6 +101,14 @@ putc::
 	out	(SIO_AD), a
 	ret
 
+; newline: send the end of a line ("\r\n")
+;   destroys: A, B
+newline::
+	ld	a, #'\r'
+	call	putc
+	ld	a, #'\n'
+	jp	putc			; putc returns to our caller
+
 ; getc: wait for a character and return it
 ;   out: A = character
 getc::

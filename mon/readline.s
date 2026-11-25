@@ -19,10 +19,7 @@ readline::
 	jp	1$
 2$:
 	ld	(hl), #0x00
-	ld	a, #0x0D
-	call	putc
-	ld	a, #0x0A
-	call	putc
+	call	newline
 	ret
 
 	.area	_DATA

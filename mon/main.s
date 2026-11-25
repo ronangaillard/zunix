@@ -19,10 +19,7 @@ no_command_found:
 	call	puts
 	ld	hl, #commandbuf
 	call	puts
-	ld	a, #'\r'
-	call	putc
-	ld	a, #'\n'
-	call	putc
+	call	newline
 	ret
 
 find_command:
