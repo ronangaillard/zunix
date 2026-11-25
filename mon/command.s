@@ -9,6 +9,8 @@ commands::
 	.dw	cmd_load
 	.dw	name_run
 	.dw	cmd_run
+	.dw	name_boot
+	.dw	cmd_boot
 	.dw	0
 
 name_help::
@@ -22,3 +24,6 @@ name_load::
 
 name_run::
 	.asciz	"run"
+
+name_boot::
+	.asciz	"boot"

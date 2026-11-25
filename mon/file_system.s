@@ -1,20 +1,4 @@
-; Fuzix file system (extended V7) on the CompactFlash card
-
-V7_MAGIC = 0x31C6			; 12742
-
-; Superblock (block 1) offsets
-OFFSET_MAGIC = 0			; magic number (2 bytes)
-OFFSET_ISIZE = 2			; first sector after the inode table (2 bytes)
-OFFSET_FSIZE = 4			; size of the file system in blocks (2 bytes)
-
-; Inode offsets
-OFFSET_MODE_TYPE = 1			; high byte of the mode: type of the file, 0 if the inode is free
-OFFSET_ADDRESS = 24			; sector numbers of the contents (20 * 2 bytes)
-
-; Sizes in bytes
-SECTOR_SIZE = 512
-INODE_SIZE = 64
-FOLDER_ENTRY_SIZE == 32			; == : also used in cmd_list.s
+	.include	"file_system.inc"
 
 	.area	_DATA
 
@@ -30,7 +14,7 @@ inodebuf::
 sectorbuf::
 	.ds	SECTOR_SIZE		; last sector read
 
-lba:
+lba::
 	.ds	4			; sector number, little-endian
 
 	.area	_CODE
@@ -135,6 +119,18 @@ inode_next::
 	scf				; no more inodes
 	ret
 
+; inode_read: read an inode, given its number, into inodebuf (mount first)
+; if this inode is free, the next used one is read instead (DE tells which one): give the number of
+; a used inode, like the ones found in a directory
+;   in:  DE = inode number
+;   out: carry = 0: inodebuf = inode, DE = inode number
+;        carry = 1: no used inode from this number to the end of the table
+;   destroys: A, BC, HL
+inode_read::
+	ld	(inode_next_number), de
+	call	inode_next
+	ret
+
 ; dir_first: read the first sector of the directory whose inode is in inodebuf
 ;   out: sectorbuf = first 16 entries of the directory
 ;   destroys: A, BC, DE, HL
@@ -148,51 +144,17 @@ dir_first::
 	call	read_sector
 	ret
 
-; find_kernel_inode: look for the file "kernel.bin" in the root directory (first sector of the
-; directory only: 16 entries); call mount then inode_first first, so that inodebuf = root inode
-;   out: carry = 0: DE = inode number of the file
-;        carry = 1: file not found
-;   destroys: A, BC, HL
-find_kernel_inode::
-	call	dir_first
-	ld	hl, #sectorbuf
-2$:
-	push	hl			; beginning of the entry
-	ld	e, (hl)
-	inc	hl
-	ld	d, (hl)			; DE = inode number
-	inc	hl			; HL = name
-	ld	a, d
-	or	a, e
-	jp	nz, 3$
-	jp	4$			; free entry (inode number = 0): skip it
-3$:
-	push	de
-	ld	de, #kernel_file_name
-	call	compare_strings
-	jp	z, kernel_inode_found
-	pop	de
+; read file whose inode is in inode buf
+; file data is moved to HL
+load_file_to_ram::
 
-4$:
-	pop	hl			; beginning of the entry
-	ld	de, #FOLDER_ENTRY_SIZE
-	add	hl, de			; jump to next entry
 
-	; end of the sector ?
-	ld	de, #sectorbuf + 512
-	or	a, a			; clear carry flag
-	sbc	hl, de
-	add	hl, de			; restore HL, carry does not change
-	jr	c, 2$			; jump when HL < end of the sector
-	scf				; set carry flag : kernel not found
+; mount_error: show that the CF card could not be mounted
+;   destroys: A, B, HL
+mount_error::
+	ld	hl, #msg_mount_error
+	call	puts
 	ret
 
-kernel_inode_found:
-	pop	de			; DE contains inode number
-	pop	hl			; HL was pushed so pop it here
-
-	or	a, a			; clears carry flag
-	ret
-
-kernel_file_name:
-	.asciz	"kernel.bin"
+msg_mount_error:
+	.asciz	"mount error, check if CF is inserted and if CF is formatted with V7 file system\r\n"

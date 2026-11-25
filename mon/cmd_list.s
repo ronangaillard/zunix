@@ -53,15 +53,8 @@ cmd_list::
 	jr	c, 2$			; jump when HL < end of the sector
 	ret
 
-; mount_error: show that the CF card could not be mounted
-;   destroys: A, B, HL
-mount_error:
-	ld	hl, #msg_mount_error
-	call	puts
-	ret
 
-msg_mount_error:
-	.asciz	"mount error, check if CF is inserted and if CF is formatted with V7 file system\r\n"
+
 msg_mount_success:
 	.asciz	"mount success\r\n"
 
