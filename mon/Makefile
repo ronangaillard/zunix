@@ -15,23 +15,26 @@ $(BUILD)/%.rel: %.s $(wildcard *.inc)
 
 # code after the vectors, variables in RAM
 $(BUILD)/monitor.ihx: $(OBJ)
-	sdldz80 -m -i -b _CODE=0x0100 -b _DATA=0x8000 $@ $(OBJ)
+	sdldz80 -m -i -b _CODE=0x0E000 -b _DATA=0xF000 $@ $(OBJ)
 
 $(BUILD)/monitor.bin: $(BUILD)/monitor.ihx
-	makebin -p $< $@
+	makebin -s 65536 -p $< $@
 
 ROM_CHIP   ?= SST39SF040
-ROM_COPIES ?= 4
 
-# on rev A board A17 and A18 are left floating, so we need to
-# copy the monitor at 4 different places so that A17 and A18 don't bother
-# This is fixed in rev B, so once I receive revB this is not needed anymore
+CODE_ADDR := 0xE000
+DATA_ADDR := 0xF000
+ROM_SIZE  ?= 0x80000
+
+# the code runs at CODE_ADDR but is stored in the ROM at 0x0100: vectors.s copies it at startup
 $(BUILD)/monitor.rom: $(BUILD)/monitor.bin
 	python3 -c "import sys; d = open(sys.argv[1], 'rb').read(); \
-	assert len(d) <= 0x20000, 'monitor > 128 KB'; \
-	open(sys.argv[2], 'wb').write((d + b'\xff' * (0x20000 - len(d))) * $(ROM_COPIES))" $< $@
-	@echo "$@: $$(wc -c < $<) bytes of code, image for $(ROM_CHIP)"
-
+	code = d[$(CODE_ADDR):]; \
+	assert len(code) <= $(DATA_ADDR) - $(CODE_ADDR), '_CODE overlaps _DATA'; \
+	img = d[:0x100] + code; \
+	open(sys.argv[2], 'wb').write(img + b'\xff' * ($(ROM_SIZE) - len(img)))" $< $@
+	@echo "$@: code stored at 0x0100 in the ROM, runs at $(CODE_ADDR)"
+	
 flash: $(BUILD)/monitor.rom
 	minipro -p "$(ROM_CHIP)" -w $<
 

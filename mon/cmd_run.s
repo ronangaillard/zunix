@@ -6,5 +6,5 @@
 ; its prompt
 ;   destroys: everything the program destroys
 cmd_run::
-	jp	0x9000
+	jp	0x0000
 	ret

@@ -8,6 +8,9 @@ init::
 	di				; disable interrupts
 	ld	sp, #0x0000		; set the stack at the top of the RAM
 
+	ld	a, #L_ROM_DIS
+	out	(LATCH), a		; disable ROM
+
 	call	ledoff
 
 	; Setup CTC
