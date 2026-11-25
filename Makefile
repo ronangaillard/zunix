@@ -51,4 +51,8 @@ test-asmfmt: $(ASMFMT)
 		$(ASMFMT) --check $$exp || { echo "$$exp: not stable"; exit 1; }; \
 	done; echo "asmfmt: all tests pass"
 
-.PHONY: fmt fmt-check test-asmfmt
+# 	Git hook that runs fmt-check on the staged assembly sources before each commit
+hooks:
+	git config core.hooksPath tools/git-hooks
+
+.PHONY: fmt fmt-check test-asmfmt hooks

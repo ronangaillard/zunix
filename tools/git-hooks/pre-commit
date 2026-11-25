@@ -1,0 +1,14 @@
+#!/bin/sh
+# pre-commit: refuse a commit whose assembly sources (*.s, *.inc) are not formatted by asmfmt
+# Enable it once per clone with: make hooks (git config core.hooksPath tools/git-hooks)
+# Fix the files with: make fmt, then git add them again
+# Note: the files are checked as they are in the working tree, not as they were staged
+
+files=$(git diff --cached --name-only --diff-filter=ACMR -- '*.s' '*.inc')
+[ -z "$files" ] && exit 0
+
+make -s tools/asmfmt/asmfmt || exit 1
+if ! tools/asmfmt/asmfmt --check $files; then
+	echo "pre-commit: these files are not formatted: run 'make fmt', then git add them" >&2
+	exit 1
+fi
