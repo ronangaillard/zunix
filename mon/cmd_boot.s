@@ -15,23 +15,9 @@ cmd_boot::
 	call	find_kernel_inode
 	jp	c, no_kernel_found
 
-	ld	b, #0			; B = number of direct addresses blocs
 
-	ld	hl, #0
-	push	hl
 
-read_loop:
-	ld	hl, (inodebuf + OFFSET_BLOCK_ADRESSES)	; first sector of the content
-	ld	(lba), hl
-	ld	hl, #0
-	ld	(lba + 2), hl
-
-	ld	de, #lba
-
-	pop	hl
-	call	read_sector
-
-	; push	hl
+	call	load_file_to_ram
 
 	ret
 
@@ -85,7 +71,6 @@ kernel_inode_found:
 
 	; load kernel inode
 	call	inode_read
-
 
 	or	a, a			; clears carry flag
 	ret

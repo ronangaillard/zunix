@@ -147,6 +147,46 @@ dir_first::
 ; read file whose inode is in inode buf
 ; file data is moved to HL
 load_file_to_ram::
+	ld	b, #0			; B = number of direct addresses blocs
+
+	ld	hl, #0
+	push	hl			; HL = destination of read bytes in RAM
+read_loop:
+	ld	hl, #inodebuf + OFFSET_BLOCK_ADRESSES	; first sector of the content
+	ld	e, b
+	ld	d, #0
+	add	hl, de
+
+	ld	e, (hl)
+	inc	hl
+	ld	d, (hl)
+	ex	de, hl
+
+	; is it last sector ?
+	ld	a, h
+	or	a, l			; Z = 1 if HL = 0
+	jp	z, end_of_file
+
+	ld	(lba), hl
+	ld	hl, #0
+	ld	(lba + 2), hl
+
+	ld	de, #lba
+
+	pop	hl
+	push	bc
+	call	read_sector
+	pop	bc
+
+	push	hl
+	inc	b
+	inc	b
+
+	jp	read_loop
+
+end_of_file:
+	pop	hl
+	ret
 
 
 ; mount_error: show that the CF card could not be mounted
