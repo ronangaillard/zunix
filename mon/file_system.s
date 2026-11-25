@@ -50,7 +50,7 @@ mount::
 
 ; inode_first: read the first used inode of the table into inodebuf (mount first)
 ;   out: same as inode_next
-;   destroys: A, BC, DE, HL
+;   destroys: A, BC, HL
 inode_first::
 	ld	hl, #1			; inode 0 is reserved
 	ld	(inode_next_number), hl
@@ -126,7 +126,7 @@ inode_next::
 ; a used inode, like the ones found in a directory
 ;   in:  DE = inode number
 ;   out: carry = 0: inodebuf = inode, DE = inode number
-;        carry = 1: no used inode from this number to the end of the table
+;        carry = 1: no used inode from this number to the end of the table, or read error
 ;   destroys: A, BC, HL
 inode_read::
 	ld	(inode_next_number), de

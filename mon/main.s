@@ -13,7 +13,8 @@ interpreter_start:
 	call	find_command
 	jp	interpreter_start
 
-
+; no_command_found: show that the line typed is not a command
+;   destroys: A, B, HL
 no_command_found:
 	ld	hl, #msg_no_command_found
 	call	puts
@@ -22,6 +23,9 @@ no_command_found:
 	call	newline
 	ret
 
+; find_command: look for the line typed (commandbuf) in the command table and run the command
+; (jp: the command returns to our caller); show an error when there is no such command
+;   destroys: A, B, DE, HL, and everything the command destroys
 find_command:
 	ld	hl, #commands
 1$:
@@ -51,7 +55,7 @@ find_command:
 
 ; compare_strings: compare two strings
 ;   in:  HL = address of the first character of the first string
-;   in:  DE = address of the first character of the second string
+;        DE = address of the first character of the second string
 ;   out: Z = 0 if different, 1 if same string
 ;   destroys: A, B, DE, HL
 compare_strings::

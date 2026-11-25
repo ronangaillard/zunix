@@ -1,7 +1,9 @@
-; Help commande to list available commands
+; help command: list the available commands
 
 	.area	_CODE
 
+; cmd_help: show the available commands and what they do
+;   destroys: A, B, HL
 cmd_help::
 	ld	hl, #msg_help
 	call	puts

@@ -20,11 +20,15 @@ cmd_boot::
 	jp	c, kernel_load_error
 	jp	0x0000			; start the kernel
 
+; no_kernel_found: show that there is no "kernel.bin" in the root directory
+;   destroys: A, B, HL
 no_kernel_found:
 	ld	hl, #msg_no_kernel_found
 	call	puts
 	ret
 
+; kernel_load_error: show that "kernel.bin" could not be loaded
+;   destroys: A, B, HL
 kernel_load_error:
 	ld	hl, #msg_kernel_load_error
 	call	puts
