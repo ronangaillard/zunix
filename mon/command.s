@@ -15,19 +15,19 @@ commands::
 	.dw	cmd_boot
 	.dw	0
 
-name_help::
+name_help:
 	.asciz	"help"
 
-name_list::
+name_list:
 	.asciz	"list"
 
-name_load::
+name_load:
 	.asciz	"load"
 
-name_run::
+name_run:
 	.asciz	"run"
 
-name_boot::
+name_boot:
 	.asciz	"boot"
 
 ; Helpers shared by the commands

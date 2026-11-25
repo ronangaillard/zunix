@@ -9,10 +9,10 @@ inode_next_number:
 inode_table_end:
 	.ds	2			; first sector after the inode table
 
-inodebuf::
+inodebuf:
 	.ds	INODE_SIZE		; last inode read
 
-sectorbuf::
+sectorbuf:
 	.ds	SECTOR_SIZE		; last sector read
 
 sector_pointer:
