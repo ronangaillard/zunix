@@ -20,6 +20,8 @@ cmd_boot::
 
 	call	load_file_to_ram
 
+	jp	0x0000
+
 	ret
 
 no_kernel_found:
