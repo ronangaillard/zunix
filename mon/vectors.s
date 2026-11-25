@@ -1,5 +1,6 @@
 ; Z80 fixed addresses
-; Makefile: _CODE at 0x0100, _DATA at 0x8000
+; at reset the ROM is at 0x0000: copy _CODE (stored at 0x0100 in the ROM, see the Makefile) to the
+; address it is linked for (0xE000, common RAM), then start it; init removes the ROM
 
 CODE_ADDRESS_BEFORE_RELOCATE = 0x0100
 

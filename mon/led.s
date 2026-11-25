@@ -1,5 +1,5 @@
 ; LED D_L8, on the latch. Writing the latch also sets the memory map: keep L_ROM_DIS (RAM at
-; 0x0000), as the program runs from RAM
+; 0x0000), set by init once the monitor runs from RAM at 0xE000
 
 	.include	"hw.inc"
 

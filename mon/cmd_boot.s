@@ -5,7 +5,7 @@
 	.area	_CODE
 
 ; cmd_boot: mount the CF card, find "kernel.bin" in its root directory, read its inode and load
-; the whole file into RAM at 0x0000 (for now: the kernel is not started yet)
+; the whole file into RAM at 0x0000, then start it there
 ;   destroys: A, BC, DE, HL
 cmd_boot::
 	call	mount
@@ -16,13 +16,8 @@ cmd_boot::
 	call	find_kernel_inode
 	jp	c, no_kernel_found
 
-
-
 	call	load_file_to_ram
-
-	jp	0x0000
-
-	ret
+	jp	0x0000			; start the kernel
 
 no_kernel_found:
 	ld	hl, #msg_no_kernel_found

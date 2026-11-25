@@ -53,51 +53,5 @@ cmd_list::
 	jr	c, 2$			; jump when HL < end of the sector
 	ret
 
-
-
-msg_mount_success:
-	.asciz	"mount success\r\n"
-
-; print_inode: show that an inode was found
-;   destroys: A, B, HL
-print_inode:
-	ld	hl, #msg_inode_found
-	call	puts
-	ret
-
-msg_inode_found:
-	.asciz	"inode found\r\n"
-
-; file_found: show that a file was found
-;   destroys: A, B, HL
-file_found:
-	ld	hl, #msg_file_found
-	call	puts
-	ret
-
-; folder_found: show that a folder was found
-;   destroys: A, B, HL
-folder_found:
-	ld	hl, #msg_folder_found
-	call	puts
-	ret
-
-msg_bad_filesystem:
-	.asciz	"CF disk is not formatted with V7 file system\r\n"
-msg_good_filesystem:
-	.asciz	"V7 filesystem detected\r\n"
-
-msg_sector_count_start:
-	.asciz	"total sectors : 0x"
-msg_sector_count_middle:
-	.asciz	" ("
-msg_sector_count_end:
-	.asciz	" Ko)\r\n"
-
-msg_file_found:
-	.asciz	"file found\r\n"
-msg_folder_found:
-	.asciz	"folder found\r\n"
-
 msg_line_return:
 	.asciz	"\r\n"

@@ -158,7 +158,7 @@ load_file_to_ram::
 	ld	hl, #0
 	push	hl			; HL = destination of read bytes in RAM
 read_loop:
-	ld	hl, #inodebuf + OFFSET_BLOCK_ADRESSES	; first sector of the content
+	ld	hl, #inodebuf + OFFSET_ADDRESS	; first sector of the content
 	ld	e, b
 	ld	d, #0
 	add	hl, de
@@ -196,7 +196,7 @@ read_loop:
 
 indirect_addressing_table_read:
 	; read sector containing indirect adresses
-	ld	hl, #inodebuf + OFFSET_BLOCK_ADRESSES + 36
+	ld	hl, #inodebuf + OFFSET_ADDRESS + 36
 
 	ld	e, (hl)
 	inc	hl

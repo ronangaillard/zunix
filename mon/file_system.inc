@@ -10,7 +10,6 @@ OFFSET_FSIZE = 4			; size of the file system in blocks (2 bytes)
 ; Inode offsets
 OFFSET_MODE_TYPE = 1			; high byte of the mode: type of the file, 0 if the inode is free
 OFFSET_ADDRESS = 24			; sector numbers of the contents (20 * 2 bytes)
-OFFSET_BLOCK_ADRESSES == 24
 
 ; Sizes in bytes
 SECTOR_SIZE = 512
