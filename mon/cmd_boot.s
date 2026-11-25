@@ -11,7 +11,8 @@ cmd_boot::
 	call	mount
 	jp	c, mount_error		; mount_error returns to our caller
 
-	call	inode_first
+	call	inode_first		; inodebuf = root directory
+	jp	c, mount_error		; no used inode: the file system is broken
 	call	find_kernel_inode
 	jp	c, no_kernel_found
 
@@ -24,9 +25,10 @@ no_kernel_found:
 	ret
 
 ; find_kernel_inode: look for the file "kernel.bin" in the root directory (first sector of the
-; directory only: 16 entries); call mount then inode_first first, so that inodebuf = root inode
-;   out: carry = 0: DE = inode number of the file
-;        carry = 1: file not found
+; directory only: 16 entries) and read its inode; call mount then inode_first first, so that
+; inodebuf = root inode
+;   out: carry = 0: inodebuf = inode of the file, DE = its number
+;        carry = 1: file not found, or its inode could not be read
 ;   destroys: A, BC, HL
 find_kernel_inode::
 	call	dir_first
@@ -67,9 +69,7 @@ kernel_inode_found:
 	pop	hl			; HL was pushed so pop it here
 
 	; load kernel inode
-	call	inode_read
-
-	or	a, a			; clears carry flag
+	call	inode_read		; carry: result of inode_read, returned as is
 	ret
 
 kernel_file_name:

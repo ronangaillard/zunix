@@ -10,6 +10,7 @@ cmd_list::
 	jp	c, mount_error		; mount_error returns to our caller
 
 	call	inode_first		; inode 1: root directory
+	jp	c, mount_error		; no used inode: the file system is broken
 	call	dir_first
 
 	; show each entry: inode number (2 bytes), name (30 bytes)
