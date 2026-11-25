@@ -11,6 +11,15 @@ init::
 	ld	a, #L_ROM_DIS
 	out	(LATCH), a		; disable ROM
 
+	; the vectors of vectors.s left with the ROM: write the same instructions in the RAM now at
+	; 0x0000, so that an NMI does not jump into garbage (a kernel loaded at 0x0000 replaces them)
+	ld	a, #0xFB		; ei
+	ld	(0x0038), a
+	ld	hl, #0x4DED		; reti (ED 4D, little-endian)
+	ld	(0x0039), hl
+	ld	hl, #0x45ED		; retn (ED 45, little-endian)
+	ld	(0x0066), hl
+
 	call	ledoff
 
 	; Setup CTC
