@@ -14,6 +14,9 @@ inodebuf::
 sectorbuf::
 	.ds	SECTOR_SIZE		; last sector read
 
+sector_pointer:
+	.ds	2			; next entry to read in the indirect table (in sectorbuf)
+
 lba::
 	.ds	4			; sector number, little-endian
 
@@ -144,8 +147,11 @@ dir_first::
 	call	read_sector
 	ret
 
-; read file whose inode is in inode buf
-; file data is moved to HL
+; load_file_to_ram: read the file whose inode is in inodebuf into RAM, sector after sector (18 direct
+; blocks, then the single indirect block: files up to 137 KB); stops at the first empty block (0)
+; for now the destination is always 0x0000; sectorbuf is overwritten (indirect table)
+;   out: HL = address after the last byte read
+;   destroys: A, BC, DE
 load_file_to_ram::
 	ld	b, #0			; B = number of direct addresses blocs
 
@@ -182,7 +188,73 @@ read_loop:
 	inc	b
 	inc	b
 
+	ld	a, #36			; 36 = 18 * 2
+	cp	a, b
+	jp	z, indirect_addressing_table_read
+
 	jp	read_loop
+
+indirect_addressing_table_read:
+	; read sector containing indirect adresses
+	ld	hl, #inodebuf + OFFSET_BLOCK_ADRESSES + 36
+
+	ld	e, (hl)
+	inc	hl
+	ld	d, (hl)
+	ex	de, hl			; HL = sector of indirect address table
+
+	; is it last sector ?
+	ld	a, h
+	or	a, l			; Z = 1 if HL = 0
+	jp	z, end_of_file
+
+	ld	(lba), hl
+	ld	hl, #0
+	ld	(lba + 2), hl
+
+	ld	de, #lba
+
+	ld	hl, #sectorbuf		; sectorbuf will contain indirect address table
+
+	call	read_sector		; indirect table is in sector pointed by LBA
+	ld	hl, #sectorbuf
+	ld	(sector_pointer), hl	; first entry of the indirect table
+
+	; stack during the loop: destination only (like the direct loop)
+indirect_addressing_loop:
+	; end of the indirect table ? (256 entries)
+	ld	hl, (sector_pointer)
+	ld	de, #sectorbuf + SECTOR_SIZE
+	or	a, a			; clear carry flag
+	sbc	hl, de
+	jp	z, end_of_file
+
+	; read the entry, then move the pointer to the next one
+	ld	hl, (sector_pointer)
+	ld	e, (hl)
+	inc	hl
+	ld	d, (hl)
+	inc	hl
+	ld	(sector_pointer), hl
+	ex	de, hl			; HL = sector to read
+
+	; is it last sector ?
+	ld	a, h
+	or	a, l			; Z = 1 if HL = 0
+	jp	z, end_of_file
+
+	ld	(lba), hl
+	ld	hl, #0
+	ld	(lba + 2), hl
+
+	ld	de, #lba
+
+	pop	hl			; HL = destination
+	call	read_sector
+	push	hl			; destination of the next sector
+
+	jp	indirect_addressing_loop
+
 
 end_of_file:
 	pop	hl

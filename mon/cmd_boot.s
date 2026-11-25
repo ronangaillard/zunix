@@ -5,13 +5,14 @@
 	.area	_CODE
 
 ; cmd_boot: mount the CF card, find "kernel.bin" in its root directory, read its inode and load
-; the file into RAM (for now: its first sector only, at 0x0000)
+; the whole file into RAM at 0x0000 (for now: the kernel is not started yet)
 ;   destroys: A, BC, DE, HL
 cmd_boot::
 	call	mount
 	or	a, a
-	jp	z, mount_error		; jump when the file system is mounted
+	jp	z, mount_error
 
+	call	inode_first
 	call	find_kernel_inode
 	jp	c, no_kernel_found
 
