@@ -20,6 +20,9 @@ sector_pointer:
 lba:
 	.ds	4			; sector number for read_sector, little-endian
 
+dir_entry:
+	.ds	2			; next entry for dir_next (in sectorbuf)
+
 	.area	_CODE
 
 ; mount: check that the CF card holds a Fuzix file system and find its inode table
@@ -130,14 +133,52 @@ inode_read::
 	call	inode_next
 	ret
 
-; dir_first: read the first sector of the directory whose inode is in inodebuf
+; dir_first: read the first sector of the directory whose inode is in inodebuf; dir_next then
+; returns its entries
 ;   out: carry = 0: sectorbuf = first 16 entries of the directory
 ;        carry = 1: read error
 ;   destroys: A, BC, DE, HL
 dir_first::
 	ld	de, (inodebuf + OFFSET_ADDRESS)	; first sector of the contents
 	ld	hl, #sectorbuf
-	call	read_block		; carry: result of read_block, returned as is
+	call	read_block
+	ret	c			; read error
+	ld	hl, #sectorbuf
+	ld	(dir_entry), hl		; dir_next starts with the first entry
+	ret				; carry = 0: from read_block
+
+; dir_next: return the next used entry of the sector read by dir_first (free entries are skipped)
+;   out: carry = 0: DE = inode number, HL = name (DIR_NAME_LENGTH characters max, ended by 0 if
+;                   shorter)
+;        carry = 1: no more entries (end of the sector)
+;   destroys: A, BC
+dir_next::
+	ld	hl, (dir_entry)
+1$:
+	; end of the sector ?
+	ld	de, #sectorbuf + SECTOR_SIZE
+	or	a, a			; clear carry flag
+	sbc	hl, de
+	add	hl, de			; restore HL, carry does not change
+	ccf				; carry = 1 when HL >= end of the sector
+	ret	c			; no more entries
+
+	ld	e, (hl)
+	inc	hl
+	ld	d, (hl)
+	inc	hl			; DE = inode number, HL = name
+	ld	bc, #DIR_ENTRY_SIZE - 2
+	ld	a, d
+	or	a, e
+	jr	nz, 2$
+	add	hl, bc			; free entry (inode number = 0): skip it
+	jr	1$
+2$:
+	push	hl			; name
+	add	hl, bc
+	ld	(dir_entry), hl		; next entry
+	pop	hl
+	or	a, a			; clear carry flag: entry found
 	ret
 
 ; read_block: read one block (one block = one sector) of the file system

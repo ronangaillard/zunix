@@ -14,4 +14,5 @@ OFFSET_ADDRESS = 24			; sector numbers of the contents (20 * 2 bytes)
 ; Sizes in bytes
 SECTOR_SIZE = 512
 INODE_SIZE = 64
-FOLDER_ENTRY_SIZE == 32			; == : also used in cmd_list.s
+DIR_ENTRY_SIZE = 32			; directory entry: inode number (2 bytes), then the name
+DIR_NAME_LENGTH = 30			; ended by 0 if shorter

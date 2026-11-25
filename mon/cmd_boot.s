@@ -39,41 +39,14 @@ kernel_load_error:
 find_kernel_inode::
 	call	dir_first
 	ret	c			; read error
-	ld	hl, #sectorbuf
-2$:
-	push	hl			; beginning of the entry
-	ld	e, (hl)
-	inc	hl
-	ld	d, (hl)			; DE = inode number
-	inc	hl			; HL = name
-	ld	a, d
-	or	a, e
-	jp	nz, 3$
-	jp	4$			; free entry (inode number = 0): skip it
-3$:
-	push	de
+1$:
+	call	dir_next
+	ret	c			; no more entries: file not found
+	push	de			; inode number
 	ld	de, #kernel_file_name
 	call	compare_strings
-	jp	z, kernel_inode_found
 	pop	de
-
-4$:
-	pop	hl			; beginning of the entry
-	ld	de, #FOLDER_ENTRY_SIZE
-	add	hl, de			; jump to next entry
-
-	; end of the sector ?
-	ld	de, #sectorbuf + 512
-	or	a, a			; clear carry flag
-	sbc	hl, de
-	add	hl, de			; restore HL, carry does not change
-	jr	c, 2$			; jump when HL < end of the sector
-	scf				; set carry flag : kernel not found
-	ret
-
-kernel_inode_found:
-	pop	de			; DE contains inode number
-	pop	hl			; HL was pushed so pop it here
+	jr	nz, 1$			; not this one
 
 	; load kernel inode
 	call	inode_read		; carry: result of inode_read, returned as is
