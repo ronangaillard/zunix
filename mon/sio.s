@@ -113,7 +113,7 @@ newline::
 ;   out: A = character
 getc::
 	in	a, (SIO_AC)
-	bit	#SIO_RECEIVE_CHAR_AVAILABLE_BIT, a	; Did SIO receveive a character ?
+	bit	#SIO_RECEIVE_CHAR_AVAILABLE_BIT, a	; did the SIO receive a character?
 	jp	z, getc
 	in	a, (SIO_AD)
 	ret

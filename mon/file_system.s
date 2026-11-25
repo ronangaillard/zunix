@@ -203,7 +203,7 @@ read_block:
 ;                   was loaded)
 ;   destroys: A, BC, DE
 load_file_to_ram::
-	ld	b, #0			; B = number of direct addresses blocs
+	ld	b, #0			; B = offset of the entry in the direct table (2 bytes each)
 
 	ld	hl, #0
 	push	hl			; HL = destination of read bytes in RAM
@@ -239,7 +239,7 @@ read_loop:
 	jp	read_loop
 
 indirect_addressing_table_read:
-	; read sector containing indirect adresses
+	; read the sector holding the indirect addresses
 	ld	de, (inodebuf + OFFSET_ADDRESS + 36)	; DE = sector of indirect address table
 
 	; is it last sector ?
