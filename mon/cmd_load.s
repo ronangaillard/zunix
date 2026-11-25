@@ -61,35 +61,5 @@ cmd_load::
 	call	newline
 	ret
 
-
-; hex_digit: convert a hexadecimal character to its value
-;   in:  A = character ('0'-'9', 'A'-'F' or 'a'-'f', not checked)
-;   out: A = value (0-15)
-hex_digit:
-	or	a, #0x20		; lowercase: 'A'-'F' -> 'a'-'f', digits unchanged (bit 5 already set)
-	cp	a, #'a'
-	jp	c, 1$			; jump when A is a digit ('0'-'9')
-	sub	a, #'a' - 10		; letter ('a'-'f'): 10-15
-	ret
-1$:
-	sub	#'0'			; digit ('0'-'9')
-	ret
-
-; get_hex8: receive 2 hexadecimal characters and return the byte
-;   out: A = byte
-;   destroys: C
-get_hex8:
-	call	getc
-	call	hex_digit
-	add	a, a
-	add	a, a
-	add	a, a
-	add	a, a			; high digit * 16 (rl a would also shift the carry in)
-	ld	c, a
-	call	getc
-	call	hex_digit
-	add	a, c
-	ret
-
 msg_waiting_for_program:
 	.asciz	"waiting for program\r\n"

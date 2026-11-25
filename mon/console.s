@@ -1,4 +1,4 @@
-; Console on SIO channel A
+; Console on SIO channel A: output, line input, hexadecimal input
 
 	.include	"hw.inc"
 
@@ -117,3 +117,59 @@ getc::
 	jp	z, getc
 	in	a, (SIO_AD)
 	ret
+
+; readline: read characters until Enter ('\r' or '\n'), echo them, end the line with 0
+;   out: commandbuf = the line, ended by 0 (Enter not stored)
+;   destroys: A, B, HL
+readline::
+	ld	hl, #commandbuf
+1$:
+	call	getc
+	cp	#0x0D
+	jp	z, 2$
+	cp	#0x0A
+	jp	z, 2$
+	call	putc
+	ld	(hl), a
+	inc	hl
+	jp	1$
+2$:
+	ld	(hl), #0x00
+	call	newline
+	ret
+
+; hex_digit: convert a hexadecimal character to its value
+;   in:  A = character ('0'-'9', 'A'-'F' or 'a'-'f', not checked)
+;   out: A = value (0-15)
+hex_digit:
+	or	a, #0x20		; lowercase: 'A'-'F' -> 'a'-'f', digits unchanged (bit 5 already set)
+	cp	a, #'a'
+	jp	c, 1$			; jump when A is a digit ('0'-'9')
+	sub	a, #'a' - 10		; letter ('a'-'f'): 10-15
+	ret
+1$:
+	sub	#'0'			; digit ('0'-'9')
+	ret
+
+; get_hex8: receive 2 hexadecimal characters and return the byte
+;   out: A = byte
+;   destroys: C
+get_hex8::
+	call	getc
+	call	hex_digit
+	add	a, a
+	add	a, a
+	add	a, a
+	add	a, a			; high digit * 16 (rl a would also shift the carry in)
+	ld	c, a
+	call	getc
+	call	hex_digit
+	add	a, c
+	ret
+
+	.area	_DATA
+
+COMMAND_MAX_LENGTH = 64
+
+commandbuf::
+	.ds	COMMAND_MAX_LENGTH + 1
