@@ -1,5 +1,8 @@
 ; help command: list the available commands
 
+; symbols from the other files (and from the linker: s__, l__)
+	.globl	puts
+
 	.area	_CODE
 
 ; cmd_help: show the available commands and what they do

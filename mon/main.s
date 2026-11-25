@@ -1,5 +1,8 @@
 ; Main loop: greet, read a line, again
 
+; symbols from the other files (and from the linker: s__, l__)
+	.globl	commandbuf, commands, compare_strings, newline, putc, puts, readline
+
 	.area	_CODE
 
 main::

@@ -14,9 +14,11 @@ OBJ := $(patsubst %.s,$(BUILD)/%.rel,$(SRC))
 all: $(BUILD)/monitor.rom
 
 # abspath: errors name the full path, so VS Code (.vscode/tasks.json) finds the file from anywhere
+# no -g: a symbol from another file must be declared with .globl, so a typo in a name is an
+# error at its line, not an undefined symbol at link time
 $(BUILD)/%.rel: %.s $(wildcard *.inc)
 	mkdir -p $(BUILD)
-	sdasz80 -plosgff -o $@ $(abspath $<)
+	sdasz80 -plosff -o $@ $(abspath $<)
 
 # addresses where the code runs (not where it is stored in the ROM)
 $(BUILD)/monitor.ihx: $(OBJ)

@@ -2,6 +2,9 @@
 
 	.include	"file_system.inc"
 
+; symbols from the other files (and from the linker: s__, l__)
+	.globl	dir_first, dir_next, inode_first, mount, mount_error, newline, putc
+
 	.area	_CODE
 
 ; cmd_list: mount the CF card and show the names in its root directory (first sector of the

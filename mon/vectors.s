@@ -4,6 +4,8 @@
 
 CODE_ADDRESS_BEFORE_RELOCATE = 0x0100
 
+; symbols from the other files (and from the linker: s__, l__)
+	.globl	init, l__CODE, s__CODE
 
 	.area	_HEADER (ABS)
 

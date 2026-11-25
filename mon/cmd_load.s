@@ -4,6 +4,9 @@
 HEX_DATA = 0x00
 HEX_END_OF_FILE = 0x01
 
+; symbols from the other files (and from the linker: s__, l__)
+	.globl	get_hex8, getc, newline, putc, puts
+
 	.area	_CODE
 
 ; cmd_load: receive Intel HEX lines and write their data to RAM, until the end of file record

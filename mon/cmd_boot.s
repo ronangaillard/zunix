@@ -3,6 +3,9 @@
 	.include	"hw.inc"
 	.include	"file_system.inc"
 
+; symbols from the other files (and from the linker: s__, l__)
+	.globl	dir_find, inode_first, load_file_to_ram, mount, mount_error, puts
+
 	.area	_CODE
 
 ; cmd_boot: mount the CF card, find "kernel.bin" in its root directory, read its inode and load

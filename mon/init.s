@@ -2,6 +2,9 @@
 
 	.include	"hw.inc"
 
+; symbols from the other files (and from the linker: s__, l__)
+	.globl	init_storage, ledoff, main
+
 	.area	_CODE
 
 init::

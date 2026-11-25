@@ -1,5 +1,8 @@
 ; Available monitor commands
 
+; symbols from the other files (and from the linker: s__, l__)
+	.globl	cmd_boot, cmd_help, cmd_list, cmd_load, cmd_run, puts
+
 	.area	_CODE
 
 commands::

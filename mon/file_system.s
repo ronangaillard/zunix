@@ -1,6 +1,9 @@
 	.include	"hw.inc"
 	.include	"file_system.inc"
 
+; symbols from the other files (and from the linker: s__, l__)
+	.globl	compare_strings, read_sector, s__CODE
+
 	.area	_DATA
 
 inode_next_number:
