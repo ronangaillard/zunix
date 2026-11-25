@@ -23,8 +23,9 @@ lba::
 	.area	_CODE
 
 ; mount: check that the CF card holds a Fuzix file system and find its inode table
-;   out: A = 1 if the magic number is right, 0 if not
-;   destroys: BC, DE, HL
+;   out: carry = 0: file system found
+;        carry = 1: no Fuzix file system (wrong magic number)
+;   destroys: A, BC, DE, HL
 mount::
 	ld	hl, #1			; sector 1: superblock
 	ld	(lba), hl
@@ -39,12 +40,12 @@ mount::
 	or	a, a			; clear carry flag
 	sbc	hl, de
 	jr	z, 1$			; jump when the magic number is right
-	ld	a, #0			; no file system
+	scf				; no file system
 	ret
 1$:
 	ld	hl, (sectorbuf + OFFSET_ISIZE)
 	ld	(inode_table_end), hl	; sectorbuf will be overwritten
-	ld	a, #1			; file system detected
+	or	a, a			; clear carry flag: file system found
 	ret
 
 ; inode_first: read the first used inode of the table into inodebuf (mount first)

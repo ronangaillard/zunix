@@ -7,11 +7,8 @@
 ;   destroys: A, BC, DE, HL
 cmd_list::
 	call	mount
-	or	a, a
-	jp	nz, 1$			; jump when the file system is mounted
-	call	mount_error
-	ret
-1$:
+	jp	c, mount_error		; mount_error returns to our caller
+
 	call	inode_first		; inode 1: root directory
 	call	dir_first
 

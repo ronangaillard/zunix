@@ -9,8 +9,7 @@
 ;   destroys: A, BC, DE, HL
 cmd_boot::
 	call	mount
-	or	a, a
-	jp	z, mount_error
+	jp	c, mount_error		; mount_error returns to our caller
 
 	call	inode_first
 	call	find_kernel_inode
