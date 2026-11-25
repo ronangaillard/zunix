@@ -17,8 +17,8 @@ sectorbuf::
 sector_pointer:
 	.ds	2			; next entry to read in the indirect table (in sectorbuf)
 
-lba::
-	.ds	4			; sector number, little-endian
+lba:
+	.ds	4			; sector number for read_sector, little-endian
 
 	.area	_CODE
 
@@ -27,13 +27,9 @@ lba::
 ;        carry = 1: no Fuzix file system (wrong magic number)
 ;   destroys: A, BC, DE, HL
 mount::
-	ld	hl, #1			; sector 1: superblock
-	ld	(lba), hl
-	ld	hl, #0
-	ld	(lba + 2), hl
-	ld	de, #lba
+	ld	de, #1			; block 1: superblock
 	ld	hl, #sectorbuf
-	call	read_sector
+	call	read_block
 
 	ld	hl, (sectorbuf + OFFSET_MAGIC)
 	ld	de, #V7_MAGIC
@@ -81,12 +77,9 @@ inode_next::
 	jr	nc, 1$			; jump when sector >= end of the table
 	add	hl, de			; restore the sector number
 
-	ld	(lba), hl
-	ld	hl, #0
-	ld	(lba + 2), hl
-	ld	de, #lba
+	ex	de, hl
 	ld	hl, #sectorbuf
-	call	read_sector
+	call	read_block
 
 	; address of the inode = sectorbuf + (number modulo 8) * 64
 	ld	hl, (inode_next_number)
@@ -139,14 +132,22 @@ inode_read::
 ;   out: sectorbuf = first 16 entries of the directory
 ;   destroys: A, BC, DE, HL
 dir_first::
-	ld	hl, (inodebuf + OFFSET_ADDRESS)	; first sector of the contents
-	ld	(lba), hl
-	ld	hl, #0
-	ld	(lba + 2), hl
-	ld	de, #lba
+	ld	de, (inodebuf + OFFSET_ADDRESS)	; first sector of the contents
 	ld	hl, #sectorbuf
-	call	read_sector
+	call	read_block
 	ret
+
+; read_block: read one block (one block = one sector) of the file system
+;   in:  DE = block number (16 bits, like in the inodes)
+;        HL = address of the destination buffer (512 bytes)
+;   out: HL = address just after the buffer
+;   destroys: A, BC, DE
+read_block:
+	ld	(lba), de
+	ld	de, #0
+	ld	(lba + 2), de		; the file system only uses 16-bit block numbers
+	ld	de, #lba
+	jp	read_sector		; read_sector returns to our caller
 
 ; load_file_to_ram: read the file whose inode is in inodebuf into RAM, sector after sector (18 direct
 ; blocks, then the single indirect block: files up to 137 KB); stops at the first empty block (0)
@@ -166,23 +167,16 @@ read_loop:
 
 	ld	e, (hl)
 	inc	hl
-	ld	d, (hl)
-	ex	de, hl
+	ld	d, (hl)			; DE = sector to read
 
 	; is it last sector ?
-	ld	a, h
-	or	a, l			; Z = 1 if HL = 0
+	ld	a, d
+	or	a, e			; Z = 1 if DE = 0
 	jp	z, end_of_file
 
-	ld	(lba), hl
-	ld	hl, #0
-	ld	(lba + 2), hl
-
-	ld	de, #lba
-
-	pop	hl
+	pop	hl			; HL = destination
 	push	bc
-	call	read_sector
+	call	read_block
 	pop	bc
 
 	push	hl
@@ -197,27 +191,15 @@ read_loop:
 
 indirect_addressing_table_read:
 	; read sector containing indirect adresses
-	ld	hl, #inodebuf + OFFSET_ADDRESS + 36
-
-	ld	e, (hl)
-	inc	hl
-	ld	d, (hl)
-	ex	de, hl			; HL = sector of indirect address table
+	ld	de, (inodebuf + OFFSET_ADDRESS + 36)	; DE = sector of indirect address table
 
 	; is it last sector ?
-	ld	a, h
-	or	a, l			; Z = 1 if HL = 0
+	ld	a, d
+	or	a, e			; Z = 1 if DE = 0
 	jp	z, end_of_file
 
-	ld	(lba), hl
-	ld	hl, #0
-	ld	(lba + 2), hl
-
-	ld	de, #lba
-
 	ld	hl, #sectorbuf		; sectorbuf will contain indirect address table
-
-	call	read_sector		; indirect table is in sector pointed by LBA
+	call	read_block
 	ld	hl, #sectorbuf
 	ld	(sector_pointer), hl	; first entry of the indirect table
 
@@ -236,22 +218,15 @@ indirect_addressing_loop:
 	inc	hl
 	ld	d, (hl)
 	inc	hl
-	ld	(sector_pointer), hl
-	ex	de, hl			; HL = sector to read
+	ld	(sector_pointer), hl	; DE = sector to read
 
 	; is it last sector ?
-	ld	a, h
-	or	a, l			; Z = 1 if HL = 0
+	ld	a, d
+	or	a, e			; Z = 1 if DE = 0
 	jp	z, end_of_file
 
-	ld	(lba), hl
-	ld	hl, #0
-	ld	(lba + 2), hl
-
-	ld	de, #lba
-
 	pop	hl			; HL = destination
-	call	read_sector
+	call	read_block
 	push	hl			; destination of the next sector
 
 	jp	indirect_addressing_loop
