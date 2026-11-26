@@ -1,5 +1,9 @@
 {
-  "files.associations": { "*.s": "z80-macroasm", "*.inc": "z80-macroasm" },
+  "files.associations": { "*.s": "z80-macroasm", "*.inc": "z80-macroasm", "*.h": "c" },
+  "[c]": {
+    "editor.defaultFormatter": "jkillian.custom-local-formatters",
+    "editor.formatOnSave": true
+  },
   "[z80-macroasm]": {
     "editor.defaultFormatter": "jkillian.custom-local-formatters",
     "editor.formatOnSave": true,
@@ -13,6 +17,10 @@
     {
       "command": "tools/asmfmt/asmfmt",
       "languages": ["z80-macroasm"]
+    },
+    {
+      "command": "/opt/homebrew/bin/clang-format --assume-filename=${file}",
+      "languages": ["c"]
     }
   ]
 }

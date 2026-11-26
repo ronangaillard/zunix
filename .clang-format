@@ -1,0 +1,9 @@
+# C style of the kernel, applied on save in VS Code (clang-format)
+BasedOnStyle: LLVM
+IndentWidth: 4
+ColumnLimit: 100
+BreakBeforeBraces: Linux          # function braces on their own line, the others on the same line
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+SortIncludes: Never               # include order can matter, keep it as written
