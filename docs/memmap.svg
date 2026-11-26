@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="990.0" height="750.0" viewBox="0.0 0.0 990.0 750.0">
+<rect x="0.0" y="0.0" width="990.0" height="750.0" fill="#ffffff"/>
+<text x="205.0" y="28.0" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="15.0" fill="#1d2330" font-weight="bold" text-anchor="middle" dominant-baseline="middle">1. Reset</text>
+<text x="205.0" y="52.0" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.0" fill="#5b6475" font-weight="normal" text-anchor="middle" dominant-baseline="middle">the ROM is at 0x0000</text>
+<rect x="90.0" y="700.0" width="230.0" height="30.0" rx="2" fill="#b3d9bf" stroke="#1d2330" stroke-width="1.8"/>
+<text x="205.0" y="715.0" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13.0" fill="#1d2330" font-weight="bold" text-anchor="middle" dominant-baseline="middle">vectors.s (256 bytes)</text>
+<text x="82.0" y="730.0" font-family="Menlo, Monaco, Courier New, monospace" font-size="12.0" fill="#1f62c9" font-weight="bold" text-anchor="end" dominant-baseline="middle">0x0000</text>
+<polyline points="85.0,730.0 90.0,730.0" fill="none" stroke="#1f62c9" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="90.0" y="640.0" width="230.0" height="60.0" rx="2" fill="#b3d9bf" stroke="#1d2330" stroke-width="1.8"/>
+<text x="205.0" y="661.0" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="14.0" fill="#1d2330" font-weight="bold" text-anchor="middle" dominant-baseline="middle">monitor code, stored</text>
+<text x="205.0" y="681.0" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.0" fill="#5b6475" font-weight="normal" text-anchor="middle" dominant-baseline="middle">linked for 0xE000, 1678 bytes</text>
+<text x="82.0" y="700.0" font-family="Menlo, Monaco, Courier New, monospace" font-size="12.0" fill="#1f62c9" font-weight="bold" text-anchor="end" dominant-baseline="middle">0x0100</text>
+<polyline points="85.0,700.0 90.0,700.0" fill="none" stroke="#1f62c9" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="90.0" y="453.6" width="230.0" height="186.4" rx="2" fill="#cfe8d6" stroke="#1d2330" stroke-width="1.8"/>
+<rect x="87.0" y="594.0" width="236.0" height="12.0" rx="0" fill="#ffffff" stroke="none" stroke-width="0"/>
+<polyline points="84.0,594.0 326.0,594.0" fill="none" stroke="#5b6475" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="butt" stroke-dasharray="6 4"/>
+<polyline points="84.0,606.0 326.0,606.0" fill="none" stroke="#5b6475" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="butt" stroke-dasharray="6 4"/>
+<text x="205.0" y="514.8" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="14.0" fill="#1d2330" font-weight="bold" text-anchor="middle" dominant-baseline="middle">rest of the ROM</text>
+<text x="205.0" y="534.8" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.0" fill="#5b6475" font-weight="normal" text-anchor="middle" dominant-baseline="middle">0xFF, 30 KB</text>
+<text x="82.0" y="640.0" font-family="Menlo, Monaco, Courier New, monospace" font-size="12.0" fill="#1f62c9" font-weight="bold" text-anchor="end" dominant-baseline="middle">0x078E</text>
+<polyline points="85.0,640.0 90.0,640.0" fill="none" stroke="#1f62c9" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="90.0" y="293.6" width="230.0" height="160.0" rx="2" fill="#d8e4fb" stroke="#1d2330" stroke-width="1.8"/>
+<text x="205.0" y="364.6" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="14.0" fill="#1d2330" font-weight="bold" text-anchor="middle" dominant-baseline="middle">RAM</text>
+<text x="205.0" y="384.6" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.0" fill="#5b6475" font-weight="normal" text-anchor="middle" dominant-baseline="middle">bank 0, 16 KB</text>
+<text x="82.0" y="453.6" font-family="Menlo, Monaco, Courier New, monospace" font-size="12.0" fill="#1f62c9" font-weight="bold" text-anchor="end" dominant-baseline="middle">0x8000</text>
+<polyline points="85.0,453.6 90.0,453.6" fill="none" stroke="#1f62c9" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="90.0" y="90.0" width="230.0" height="203.6" rx="2" fill="#b9cdf5" stroke="#1d2330" stroke-width="1.8"/>
+<text x="205.0" y="182.8" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="14.0" fill="#1d2330" font-weight="bold" text-anchor="middle" dominant-baseline="middle">common RAM</text>
+<text x="205.0" y="202.8" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.0" fill="#5b6475" font-weight="normal" text-anchor="middle" dominant-baseline="middle">nothing yet, 16 KB</text>
+<text x="82.0" y="293.6" font-family="Menlo, Monaco, Courier New, monospace" font-size="12.0" fill="#1f62c9" font-weight="bold" text-anchor="end" dominant-baseline="middle">0xC000</text>
+<polyline points="85.0,293.6 90.0,293.6" fill="none" stroke="#1f62c9" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="82.0" y="90.0" font-family="Menlo, Monaco, Courier New, monospace" font-size="12.0" fill="#1f62c9" font-weight="bold" text-anchor="end" dominant-baseline="middle">0xFFFF</text>
+<polyline points="85.0,90.0 90.0,90.0" fill="none" stroke="#1f62c9" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="530.0" y="28.0" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="15.0" fill="#1d2330" font-weight="bold" text-anchor="middle" dominant-baseline="middle">2. Monitor running in RAM</text>
+<text x="530.0" y="52.0" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.0" fill="#5b6475" font-weight="normal" text-anchor="middle" dominant-baseline="middle">copied to 0xE000, ROM switched off</text>
+<rect x="415.0" y="700.0" width="230.0" height="30.0" rx="2" fill="#d8e4fb" stroke="#1d2330" stroke-width="1.8"/>
+<text x="530.0" y="715.0" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13.0" fill="#1d2330" font-weight="bold" text-anchor="middle" dominant-baseline="middle">vectors (256 bytes)</text>
+<text x="407.0" y="730.0" font-family="Menlo, Monaco, Courier New, monospace" font-size="12.0" fill="#1f62c9" font-weight="bold" text-anchor="end" dominant-baseline="middle">0x0000</text>
+<polyline points="410.0,730.0 415.0,730.0" fill="none" stroke="#1f62c9" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="415.0" y="213.6" width="230.0" height="486.4" rx="2" fill="#f3f6fc" stroke="#1d2330" stroke-width="1.8"/>
+<rect x="412.0" y="594.0" width="236.0" height="12.0" rx="0" fill="#ffffff" stroke="none" stroke-width="0"/>
+<polyline points="409.0,594.0 651.0,594.0" fill="none" stroke="#5b6475" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="butt" stroke-dasharray="6 4"/>
+<polyline points="409.0,606.0 651.0,606.0" fill="none" stroke="#5b6475" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="butt" stroke-dasharray="6 4"/>
+<text x="530.0" y="394.8" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="14.0" fill="#1d2330" font-weight="bold" text-anchor="middle" dominant-baseline="middle">free</text>
+<text x="530.0" y="414.8" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.0" fill="#5b6475" font-weight="normal" text-anchor="middle" dominant-baseline="middle">for the kernel, 55 KB</text>
+<text x="407.0" y="700.0" font-family="Menlo, Monaco, Courier New, monospace" font-size="12.0" fill="#1f62c9" font-weight="bold" text-anchor="end" dominant-baseline="middle">0x0100</text>
+<polyline points="410.0,700.0 415.0,700.0" fill="none" stroke="#1f62c9" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="415.0,293.6 645.0,293.6" fill="none" stroke="#5b6475" stroke-width="1" stroke-linejoin="round" stroke-linecap="butt" stroke-dasharray="2 3"/>
+<text x="639.0" y="284.6" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.0" fill="#5b6475" font-weight="normal" text-anchor="end" dominant-baseline="middle" font-style="italic">common RAM above (bank 0)</text>
+<text x="407.0" y="293.6" font-family="Menlo, Monaco, Courier New, monospace" font-size="12.0" fill="#5b6475" font-weight="normal" text-anchor="end" dominant-baseline="middle">0xC000</text>
+<rect x="415.0" y="183.6" width="230.0" height="30.0" rx="2" fill="#fde3b5" stroke="#1d2330" stroke-width="1.8"/>
+<text x="530.0" y="198.6" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13.0" fill="#1d2330" font-weight="bold" text-anchor="middle" dominant-baseline="middle">monitor code (1678 bytes)</text>
+<text x="407.0" y="213.6" font-family="Menlo, Monaco, Courier New, monospace" font-size="12.0" fill="#1f62c9" font-weight="bold" text-anchor="end" dominant-baseline="middle">0xE000</text>
+<polyline points="410.0,213.6 415.0,213.6" fill="none" stroke="#1f62c9" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="415.0" y="153.6" width="230.0" height="30.0" rx="2" fill="#f3f6fc" stroke="#1d2330" stroke-width="1.8"/>
+<text x="530.0" y="168.6" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13.0" fill="#1d2330" font-weight="bold" text-anchor="middle" dominant-baseline="middle">free (2 KB)</text>
+<text x="407.0" y="183.6" font-family="Menlo, Monaco, Courier New, monospace" font-size="12.0" fill="#1f62c9" font-weight="bold" text-anchor="end" dominant-baseline="middle">0xE68E</text>
+<polyline points="410.0,183.6 415.0,183.6" fill="none" stroke="#1f62c9" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="415.0" y="123.6" width="230.0" height="30.0" rx="2" fill="#fde3b5" stroke="#1d2330" stroke-width="1.8"/>
+<text x="530.0" y="138.6" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13.0" fill="#1d2330" font-weight="bold" text-anchor="middle" dominant-baseline="middle">monitor variables (655 bytes)</text>
+<text x="407.0" y="153.6" font-family="Menlo, Monaco, Courier New, monospace" font-size="12.0" fill="#1f62c9" font-weight="bold" text-anchor="end" dominant-baseline="middle">0xF000</text>
+<polyline points="410.0,153.6 415.0,153.6" fill="none" stroke="#1f62c9" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="415.0" y="90.0" width="230.0" height="33.6" rx="2" fill="#b9cdf5" stroke="#1d2330" stroke-width="1.8"/>
+<text x="530.0" y="106.8" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13.0" fill="#1d2330" font-weight="bold" text-anchor="middle" dominant-baseline="middle">free, stack (3 KB)</text>
+<text x="407.0" y="123.6" font-family="Menlo, Monaco, Courier New, monospace" font-size="12.0" fill="#1f62c9" font-weight="bold" text-anchor="end" dominant-baseline="middle">0xF28F</text>
+<polyline points="410.0,123.6 415.0,123.6" fill="none" stroke="#1f62c9" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="407.0" y="90.0" font-family="Menlo, Monaco, Courier New, monospace" font-size="12.0" fill="#1f62c9" font-weight="bold" text-anchor="end" dominant-baseline="middle">0xFFFF</text>
+<polyline points="410.0,90.0 415.0,90.0" fill="none" stroke="#1f62c9" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="855.0" y="28.0" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="15.0" fill="#1d2330" font-weight="bold" text-anchor="middle" dominant-baseline="middle">3. Kernel started</text>
+<text x="855.0" y="52.0" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.0" fill="#5b6475" font-weight="normal" text-anchor="middle" dominant-baseline="middle">boot, or load + run, then jp 0x0000</text>
+<rect x="740.0" y="700.0" width="230.0" height="30.0" rx="2" fill="#e9dcfa" stroke="#1d2330" stroke-width="1.8"/>
+<text x="855.0" y="715.0" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13.0" fill="#1d2330" font-weight="bold" text-anchor="middle" dominant-baseline="middle">crt0 (256 bytes)</text>
+<text x="732.0" y="730.0" font-family="Menlo, Monaco, Courier New, monospace" font-size="12.0" fill="#1f62c9" font-weight="bold" text-anchor="end" dominant-baseline="middle">0x0000</text>
+<polyline points="735.0,730.0 740.0,730.0" fill="none" stroke="#1f62c9" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="740.0" y="670.0" width="230.0" height="30.0" rx="2" fill="#e9dcfa" stroke="#1d2330" stroke-width="1.8"/>
+<text x="855.0" y="685.0" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13.0" fill="#1d2330" font-weight="bold" text-anchor="middle" dominant-baseline="middle">kernel (110 bytes)</text>
+<text x="732.0" y="700.0" font-family="Menlo, Monaco, Courier New, monospace" font-size="12.0" fill="#1f62c9" font-weight="bold" text-anchor="end" dominant-baseline="middle">0x0100</text>
+<polyline points="735.0,700.0 740.0,700.0" fill="none" stroke="#1f62c9" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="740.0" y="213.6" width="230.0" height="456.4" rx="2" fill="#f3f6fc" stroke="#1d2330" stroke-width="1.8"/>
+<rect x="737.0" y="594.0" width="236.0" height="12.0" rx="0" fill="#ffffff" stroke="none" stroke-width="0"/>
+<polyline points="734.0,594.0 976.0,594.0" fill="none" stroke="#5b6475" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="butt" stroke-dasharray="6 4"/>
+<polyline points="734.0,606.0 976.0,606.0" fill="none" stroke="#5b6475" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="butt" stroke-dasharray="6 4"/>
+<text x="855.0" y="394.8" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="14.0" fill="#1d2330" font-weight="bold" text-anchor="middle" dominant-baseline="middle">free</text>
+<text x="855.0" y="414.8" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.0" fill="#5b6475" font-weight="normal" text-anchor="middle" dominant-baseline="middle">55 KB</text>
+<polyline points="740.0,293.6 970.0,293.6" fill="none" stroke="#5b6475" stroke-width="1" stroke-linejoin="round" stroke-linecap="butt" stroke-dasharray="2 3"/>
+<text x="964.0" y="284.6" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.0" fill="#5b6475" font-weight="normal" text-anchor="end" dominant-baseline="middle" font-style="italic">common RAM above (bank 0)</text>
+<text x="732.0" y="293.6" font-family="Menlo, Monaco, Courier New, monospace" font-size="12.0" fill="#5b6475" font-weight="normal" text-anchor="end" dominant-baseline="middle">0xC000</text>
+<rect x="740.0" y="123.6" width="230.0" height="90.0" rx="2" fill="#e3e6ec" stroke="#1d2330" stroke-width="1.8"/>
+<text x="855.0" y="159.6" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="14.0" fill="#1d2330" font-weight="bold" text-anchor="middle" dominant-baseline="middle">old monitor</text>
+<text x="855.0" y="179.6" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.0" fill="#5b6475" font-weight="normal" text-anchor="middle" dominant-baseline="middle">not used anymore, 4 KB</text>
+<text x="732.0" y="213.6" font-family="Menlo, Monaco, Courier New, monospace" font-size="12.0" fill="#1f62c9" font-weight="bold" text-anchor="end" dominant-baseline="middle">0xE000</text>
+<polyline points="735.0,213.6 740.0,213.6" fill="none" stroke="#1f62c9" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="740.0" y="90.0" width="230.0" height="33.6" rx="2" fill="#e9dcfa" stroke="#1d2330" stroke-width="1.8"/>
+<text x="855.0" y="106.8" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13.0" fill="#1d2330" font-weight="bold" text-anchor="middle" dominant-baseline="middle">free, kernel stack (3 KB)</text>
+<text x="732.0" y="90.0" font-family="Menlo, Monaco, Courier New, monospace" font-size="12.0" fill="#1f62c9" font-weight="bold" text-anchor="end" dominant-baseline="middle">0xFFFF</text>
+<polyline points="735.0,90.0 740.0,90.0" fill="none" stroke="#1f62c9" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+</svg>
