@@ -1,9 +1,9 @@
 #include "dev/sio.h"
-#include "dev/z80ctc.h"
 #include "dev/z80sio.h"
 #include "platform/ports.h"
+#include "platform/sio_clock.h"
 
-void sio_init(void)
+void sio_init(uint8_t speed)
 {
     // make sure we are on register 0
     sio_ac = SIO_R0;
@@ -13,10 +13,7 @@ void sio_init(void)
         sio_ac = SIO_R1;
     } while (!(sio_ac & SIO_RR1_ALL_SENT));
 
-    // setup CTC
-    // TODO: setup elsewhere later, SIO driver should not know about CTC
-    ctc_0 = CTC_MODE_COUNTER | CTC_TIME_CONSTANT | CTC_RESET | CTC_CONTROL;
-    ctc_0 = 0x01; // N = 1: 1.8432 MHz / 1 (CTC) / 16 (SIO, WR4) = 115200 bauds
+    plt_sio_set_speed(speed);
 
     sio_ac = SIO_R0 | SIO_WR0_CHANNEL_RESET;
     sio_ac = SIO_R4;

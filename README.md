@@ -61,7 +61,8 @@ The kernel is split in three layers, as in Fuzix:
 - `core/`: the kernel itself, which touches no port (`main.c`)
 - `dev/`: the drivers (`sio.c`: SIO channel A, polled)
 - `platform/`: what is specific to this board: `crt0.s` (entry point at 0x0000: vectors, stack,
-  globals, then `main()`) and `ports.h` (I/O ports for the C side, same as `mon/hw.inc`)
+  globals, then `main()`), `ports.h` (I/O ports for the C side, same as `mon/hw.inc`) and
+  `sio_clock.c` (the CTC channel that clocks SIO channel A, for each speed)
 
 Other files:
 
