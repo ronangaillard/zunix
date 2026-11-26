@@ -1,6 +1,8 @@
 # Sends a program (Intel HEX) to the board's monitor, then stays connected as a serial console.
-#   monitor-send.py file.ihx    send the file, then console
+#   monitor-send.py file.ihx    type "load", send the file, type "run", then console
 #   monitor-send.py             console only
+# Without a keyboard (stdin is not a terminal), it shows the output for $Z80_WAIT seconds (5), then
+# quits instead of opening the console.
 # Opening the port resets the board (DTR), so the console has to be this same process: another
 # program opening the port afterwards (screen...) would reset the board and lose the program.
 # Quit with Ctrl-].
@@ -51,10 +53,37 @@ def write_all(data):
             select.select([], [port], [])
 
 
-time.sleep(2)  # the board resets when the port opens: let the monitor start
-print(read_available().decode("latin1"))
+def expect(text, seconds):
+    """Show what the board sends until text appears; False after the timeout."""
+    seen = b""
+    end = time.time() + seconds
+    while time.time() < end:
+        if select.select([port], [], [], 0.1)[0]:
+            chunk = read_available()
+            os.write(sys.stdout.fileno(), chunk)
+            seen += chunk
+            if text in seen:
+                return True
+    return False
+
+
+# the board resets when the port opens: wait for the prompt (up to 6 s more without a CF card)
+if not expect(b">", 10):
+    print("\n[no prompt from the monitor]")
 if len(sys.argv) > 1:
-    write_all(open(sys.argv[1], "rb").read())
+    write_all(b"load\r")
+    if not expect(b"waiting for program", 3):
+        sys.exit("\n[no answer to load]")
+    # without the line end after the last record: it would be read as an empty command line
+    write_all(open(sys.argv[1], "rb").read().rstrip(b"\r\n"))
+    if not expect(b">", 30):
+        sys.exit("\n[the monitor did not come back after load]")
+    write_all(b"run\r")
+
+if not sys.stdin.isatty():  # no keyboard (script, pipe): show the output for a while, then quit
+    expect(b"\0", float(os.environ.get("Z80_WAIT", "5")))
+    print()
+    sys.exit()
 
 print("[console on %s, Ctrl-] to quit]" % spec, flush=True)
 fd = sys.stdin.fileno()
