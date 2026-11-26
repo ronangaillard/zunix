@@ -67,6 +67,9 @@ def expect(text, seconds):
     return False
 
 
+if sys.stdin.isatty():  # first: everything the board sends from now on is shown
+    print("[console on %s, Ctrl-] to quit]" % spec, flush=True)
+
 # the board resets when the port opens: wait for the prompt (up to 6 s more without a CF card)
 if not expect(b">", 10):
     print("\n[no prompt from the monitor]")
@@ -85,7 +88,6 @@ if not sys.stdin.isatty():  # no keyboard (script, pipe): show the output for a 
     print()
     sys.exit()
 
-print("[console on %s, Ctrl-] to quit]" % spec, flush=True)
 fd = sys.stdin.fileno()
 saved = termios.tcgetattr(fd)
 tty.setraw(fd)  # every key goes to the board as is: Enter sends '\r'

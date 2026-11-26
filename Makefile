@@ -19,7 +19,13 @@ $(BUILD)/kernel.bin: $(OBJ)
 	sdcc -mz80 --no-std-crt0 --nostdlib --code-loc 0x0100 --data-loc 0 -o $(BUILD)/kernel.ihx $(OBJ)
 	makebin -p $(BUILD)/kernel.ihx $@
 
-.PHONY: all
+# sends the kernel to the monitor (load, then run: it starts at 0x0000), then serial console;
+# it must end below the monitor (0xE000), which load does not check
+send-kernel: $(BUILD)/kernel.bin
+	@test $$(wc -c < $<) -le 57344 || { echo "kernel.bin is bigger than 0x0000-0xDFFF"; exit 1; }
+	python3 tools/monitor-send.py $(BUILD)/kernel.ihx
+
+.PHONY: all send-kernel
 
 # 	The monitor lives in mon/ (own Makefile)
 monitor:
