@@ -1,5 +1,6 @@
 {
   "files.associations": { "*.s": "z80-macroasm", "*.inc": "z80-macroasm", "*.h": "c" },
+  "clangd.path": "/usr/bin/clangd",
   "[c]": {
     "editor.defaultFormatter": "jkillian.custom-local-formatters",
     "editor.formatOnSave": true

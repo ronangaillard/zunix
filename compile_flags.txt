@@ -1,0 +1,9 @@
+-xc
+-std=c11
+-ffreestanding
+-I.
+-Wall
+-Wextra
+-Wno-main-return-type
+-D__sfr=volatile unsigned char
+-D__at(x)=
