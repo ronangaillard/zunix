@@ -25,9 +25,14 @@ $(BUILD)/%.rel: %.c $(HDRS)
 	mkdir -p $(dir $@)
 	sdcc -mz80 --opt-code-size -I. -c -o $@ $<
 
-# crt0 first (vectors at 0x0000), code at 0x0100, data right after it, no C library
+# SDCC's own library for the Z80 (z80.lib), next to the sdcc binary. 
+LIBZ80 := $(abspath $(dir $(shell command -v sdcc))../share/sdcc/lib/z80)
+
+# crt0 first (vectors at 0x0000), code at 0x0100, data right after it. --nostdlib drops the C
+# library that sdcc would add by default; -l z80 adds back only the helpers above.
 $(BUILD)/kernel.bin: $(OBJ)
-	sdcc -mz80 --no-std-crt0 --nostdlib --code-loc 0x0100 --data-loc 0 -o $(BUILD)/kernel.ihx $(OBJ)
+	sdcc -mz80 --no-std-crt0 --nostdlib -L $(LIBZ80) -l z80 --code-loc 0x0100 --data-loc 0 \
+		-o $(BUILD)/kernel.ihx $(OBJ)
 	makebin -p $(BUILD)/kernel.ihx $@
 
 # sends the kernel to the monitor (load, then run: it starts at 0x0000), then serial console;

@@ -53,26 +53,3 @@ mode. There's no way back to the monitor except a reset.
 The figure is drawn by `tools/memmap.py` with the SVG kit of the book (`docs/explications/fig.py` in
 z80-motherboard). It reads the sizes from `mon/build/monitor.map` and `build/kernel.bin`, so run it
 again after `make` and `make monitor` when they change.
-
-## Files
-
-The kernel is split in three layers, as in Fuzix:
-
-- `core/`: the kernel itself, which touches no port (`main.c`)
-- `dev/`: the drivers (`sio.c`: SIO channel A, polled)
-- `platform/`: what is specific to this board: `crt0.s` (entry point at 0x0000: vectors, stack,
-  globals, then `main()`), `ports.h` (I/O ports for the C side, same as `mon/hw.inc`) and
-  `sio_clock.c` (the CTC channel that clocks SIO channel A, for each speed)
-
-Other files:
-
-- `mon/`: the monitor, its Makefile, and `hw.inc` with the board's ports and registers
-- `tools/monitor-send.py`: serial console and HEX upload
-- `tools/asmfmt/`: formatter for the asm sources
-- `tools/diag.awk`: adds columns to assembler errors so VS Code can underline them
-- `tools/git-hooks/`: the pre-commit hook
-- `tools/memmap.py`: draws `docs/memmap.svg`
-
-Any `.c` file in `core/`, `dev/` or `platform/` gets compiled and linked. Headers are included from
-the kernel root (`#include "dev/sio.h"`). There's no C library (`--nostdlib`). The
-kernel has to fit in 0x0000-0xDFFF, and `make send-kernel` refuses anything bigger.
