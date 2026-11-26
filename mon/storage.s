@@ -57,11 +57,14 @@ wait_data_ready:
 init_storage::
 	call	wait_not_busy
 	ret	c			; no card: read_sector will fail too, mount will tell
+	ld	a, #0xE0
+	out	(CF_LBA3), a		; select the master device (LBA mode): without it, the command
+					; may go to no device and the card stays in 16-bit mode
 	ld	a, #CF_FEATURE_8BIT_MODE
 	out	(CF_ERROR_FEATURES), a	; set 8-bit mode
 	ld	a, #CF_COMMAND_SET_FEATURES
 	out	(CF_STATUS_COMMAND), a
-	or	a, a			; clear carry flag
+	call	wait_not_busy		; end of the command (carry: result of wait_not_busy)
 	ret
 
 ; read_sector: read one 512-byte sector from the CF card
