@@ -28,6 +28,7 @@ CF_ALT_STATUS_CONTROL = CF_CARD + 0x08	; alternate status (read) / device contro
 
 ; status register bits
 CF_BUSY_BIT = 7
+CF_DRDY_BIT = 6				; ready for a command
 CF_DRQ_BIT = 3
 CF_ERR_BIT = 0
 

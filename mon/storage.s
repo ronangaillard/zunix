@@ -51,15 +51,40 @@ wait_data_ready:
 	or	a, a			; clear carry flag: data ready, A unchanged
 	ret
 
+; wait_ready: wait until the CF card is ready for a command (BUSY = 0 and DRDY = 1); right after a
+; reset, the card needs much longer than wait_not_busy allows
+;   out: carry = 1: timeout (about 6 s: no card?)
+;   destroys: A, BC, D
+wait_ready:
+	ld	d, #16			; 16 times CF_TIMEOUT
+1$:
+	ld	bc, #CF_TIMEOUT
+2$:
+	in	a, (CF_STATUS_COMMAND)
+	and	a, #(1 << CF_BUSY_BIT) | (1 << CF_DRDY_BIT)
+	cp	a, #1 << CF_DRDY_BIT
+	ret	z			; ready (equal: carry = 0)
+	dec	bc
+	ld	a, b
+	or	a, c
+	jr	nz, 2$
+	dec	d
+	jr	nz, 1$
+	scf				; timeout
+	ret
+
 ; init_storage: switch the CF card to 8-bit data transfers
 ;   out: carry = 1: no answer from the card (no card?)
-;   destroys: A, BC
+;   destroys: A, BC, D
 init_storage::
-	call	wait_not_busy
+	; select the master device (LBA mode): the status register and the commands are those of the
+	; selected device; without it, the card may stay in 16-bit mode
+	ld	a, #0xE0
+	out	(CF_LBA3), a
+	call	wait_ready		; the card may still be starting after a reset
 	ret	c			; no card: read_sector will fail too, mount will tell
 	ld	a, #0xE0
-	out	(CF_LBA3), a		; select the master device (LBA mode): without it, the command
-					; may go to no device and the card stays in 16-bit mode
+	out	(CF_LBA3), a		; again: ignored if the card was busy the first time
 	ld	a, #CF_FEATURE_8BIT_MODE
 	out	(CF_ERROR_FEATURES), a	; set 8-bit mode
 	ld	a, #CF_COMMAND_SET_FEATURES
