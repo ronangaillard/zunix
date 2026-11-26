@@ -11,7 +11,8 @@ static void puts(const char *s)
 
 void main(void)
 {
+    sio_init();
     puts("Z80 kernel 0.0\n");
     for (;;)
-        sio_putc(sio_getc());   /* echo, until there is something better to do */
+        sio_putc(sio_getc()); /* echo, until there is something better to do */
 }

@@ -7,6 +7,7 @@
 #   platform/  what is specific to this board: entry point, port addresses
 # Every .c of these directories is compiled. Headers are included from the kernel root
 # (#include "dev/sio.h"), hence -I.
+BUILD  ?= build
 DIRS   := core dev platform
 CSRC   := $(foreach d,$(DIRS),$(wildcard $(d)/*.c))
 HDRS   := $(foreach d,$(DIRS),$(wildcard $(d)/*.h))

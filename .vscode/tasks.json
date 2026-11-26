@@ -77,6 +77,20 @@
       "problemMatcher": []
     },
     {
+      "label": "send kernel (board on NAS)",
+      "type": "shell",
+      "command": "make send-kernel",
+      "dependsOn": "make kernel",
+      "presentation": {
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated",
+        "clear": true,
+        "showReuseMessage": false
+      },
+      "problemMatcher": []
+    },
+    {
       "label": "serial console (board on NAS)",
       "type": "shell",
       "command": "make serial",
