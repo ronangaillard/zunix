@@ -5,11 +5,12 @@
 ; then calls main().
 ;
 ; The boot ROM loads kernel.bin at 0x0000 and jumps there with interrupts off, IM 1, RAM bank 0
-; everywhere, SIO A at 115200 8N1 (polled), CF in 8-bit mode.
+; everywhere, SIO A at 115200 8N1 (polled), CF in 8-bit mode. init switches to IM 2, with the
+; table of platform/vectors.s; interrupts stay off until the kernel enables them.
 ;
 ; Memory layout produced by the linker (see build/kernel/kernel.map):
 ;   0x0000  jp init           \
-;   0x0038  IM 1 handler       |  _HEADER: fixed addresses imposed by the Z80
+;   0x0038  rst 0x38           |  _HEADER: fixed addresses imposed by the Z80
 ;   0x0066  NMI handler        |
 ;   0x0070  init              /
 ;   0x0100  _CODE             compiled C code and string constants
@@ -17,6 +18,12 @@
 ;           _GSINIT/_GSFINAL  gsinit routine
 ;           _DATA             globals that start at 0       \ variables follow the code
 ;           _INITIALIZED      globals with an initial value / (--data-loc 0 in the Makefile)
+;           ... free ...      must end below 0xC000
+;   0xC000  _VECTORS          IM 2 table (platform/vectors.s), 256 bytes  \ common memory:
+;   0xC100  _COMMONMEM        code and data that must stay visible        | 0xC000-0xFFFF
+;                             whatever the bank                           / is always bank 0
+;           (RAM bank 0 is only mapped at 0x0000-0xBFFF while the kernel runs; -Wl-b in the
+;           Makefile sets both addresses)
 ;           ... free ...
 ;   0xFFFF  stack, grows down
 
@@ -36,6 +43,7 @@
 ; a hole at "call _main" and the linker fills in the address. The other way round, "name::" (two
 ; colons, like gsinit:: below) makes a label of this file visible to the others; "name:" stays local.
 	.globl	_main
+	.globl	interrupt_table
 
 ;---------------------------------------------------------------------------------------------
 ; Areas. An .area is a named bin for code or data: ".area _CODE" means "what follows goes into
@@ -58,9 +66,9 @@
 	.org	0			; reset, and where the boot ROM jumps
 	jp	init
 
-	.org	0x38			; IM 1: every maskable interrupt lands here.
-	ei				; Nothing enables interrupts yet, so just return.
-	reti
+	.org	0x38			; IM 1 lands here, but we run in IM 2: only reached by a
+	ei				; rst 0x38, e.g. when the CPU runs into empty memory (0xFF
+	reti				; is its opcode). Should call panic one day.
 
 	.org	0x66			; NMI: cannot be masked, just return
 	retn
@@ -68,6 +76,10 @@
 	.org	0x70			; after the vectors, before _CODE at 0x0100 (must not overlap it)
 init:
 	ld	sp, #0x0000		; stack: the first push writes 0xFFFF-0xFFFE, top of common RAM
+	ld	hl, #interrupt_table
+	ld	a, h
+	ld	i, a			; I = high byte of the IM 2 table (it must be 256-byte aligned)
+	im	2
 	call	gsinit			; set up the globals (below)
 	call	_main
 	di				; main() returned: nothing left to run, stop the CPU
@@ -88,6 +100,8 @@ init:
 	.area	_BSEG
 	.area	_BSS
 	.area	_HEAP
+	.area	_VECTORS
+	.area	_COMMONMEM
 
 ;---------------------------------------------------------------------------------------------
 ; gsinit ("global/static init"): give every C global its starting value, once, before main().

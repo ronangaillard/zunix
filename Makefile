@@ -5,19 +5,21 @@
 #   core/      the kernel itself, touches no port
 #   dev/       drivers
 #   platform/  what is specific to this board: entry point, port addresses
-# Every .c of these directories is compiled. Headers are included from the kernel root
+# Every .c and .s of these directories is built. Headers are included from the kernel root
 # (#include "dev/sio.h"), hence -I.
 BUILD  ?= build
 DIRS   := core dev platform
 CSRC   := $(foreach d,$(DIRS),$(wildcard $(d)/*.c))
+ASRC   := $(filter-out platform/crt0.s,$(foreach d,$(DIRS),$(wildcard $(d)/*.s)))
 HDRS   := $(foreach d,$(DIRS),$(wildcard $(d)/*.h))
 
 # crt0 first: the linker places the areas in the order it first sees them
-OBJ    := $(BUILD)/platform/crt0.rel $(patsubst %.c,$(BUILD)/%.rel,$(CSRC))
+OBJ    := $(BUILD)/platform/crt0.rel $(patsubst %.s,$(BUILD)/%.rel,$(ASRC)) \
+          $(patsubst %.c,$(BUILD)/%.rel,$(CSRC))
 
 all: $(BUILD)/kernel.bin
 
-$(BUILD)/platform/crt0.rel: platform/crt0.s
+$(BUILD)/%.rel: %.s
 	mkdir -p $(dir $@)
 	sdasz80 -plosgff -o $@ $<
 
@@ -25,15 +27,25 @@ $(BUILD)/%.rel: %.c $(HDRS)
 	mkdir -p $(dir $@)
 	sdcc -mz80 --opt-code-size -I. -c -o $@ $<
 
-# SDCC's own library for the Z80 (z80.lib), next to the sdcc binary. 
+# SDCC's own library for the Z80 (z80.lib), next to the sdcc binary.
 LIBZ80 := $(abspath $(dir $(shell command -v sdcc))../share/sdcc/lib/z80)
 
 # crt0 first (vectors at 0x0000), code at 0x0100, data right after it. --nostdlib drops the C
 # library that sdcc would add by default; -l z80 adds back only the helpers above.
-$(BUILD)/kernel.bin: $(OBJ)
+# -Wl passes the rest of the option to the linker as is: -b _AREA=address sets the base address
+# of an area, whatever the link order. In common RAM (see crt0.s): the IM 2 table at 0xC000,
+# 256-byte aligned, then _COMMONMEM. The awk line fails the build if the table (l__VECTORS in
+# the map, 8 hex digits, compared as text) grew past 256 bytes, onto _COMMONMEM: the linker
+# would not complain.
+# makebin: -s 65536 since the image now goes up to common RAM (its default is 32 KB), and -p
+# cuts it after the last byte used.
+$(BUILD)/kernel.bin: $(OBJ) Makefile
 	sdcc -mz80 --no-std-crt0 --nostdlib -L $(LIBZ80) -l z80 --code-loc 0x0100 --data-loc 0 \
+		-Wl-b_VECTORS=0xC000 -Wl-b_COMMONMEM=0xC100 \
 		-o $(BUILD)/kernel.ihx $(OBJ)
-	makebin -p $(BUILD)/kernel.ihx $@
+	@awk '$$2 == "l__VECTORS" && ($$1 "") > "00000100" { print "_VECTORS is bigger than 256 bytes"; exit 1 }' \
+		$(BUILD)/kernel.map
+	makebin -p -s 65536 $(BUILD)/kernel.ihx $@
 
 # sends the kernel to the monitor (load, then run: it starts at 0x0000), then serial console;
 # it must end below the monitor (0xE000), which load does not check
