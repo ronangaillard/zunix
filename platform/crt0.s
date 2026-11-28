@@ -44,6 +44,7 @@
 ; colons, like gsinit:: below) makes a label of this file visible to the others; "name:" stays local.
 	.globl	_main
 	.globl	interrupt_table
+	.globl	_panic
 
 ;---------------------------------------------------------------------------------------------
 ; Areas. An .area is a named bin for code or data: ".area _CODE" means "what follows goes into
@@ -67,8 +68,10 @@
 	jp	init
 
 	.org	0x38			; IM 1 lands here, but we run in IM 2: only reached by a
-	ei				; rst 0x38, e.g. when the CPU runs into empty memory (0xFF
-	reti				; is its opcode). Should call panic one day.
+	ld	hl, #msg_rst38		; rst 0x38, e.g. when the CPU runs into empty memory (0xFF
+	jp	_panic			; is its opcode) or calls a corrupted function pointer
+msg_rst38:				; (must end before 0x66)
+	.asciz	"rst 0x38: jump to empty memory?"
 
 	.org	0x66			; NMI: cannot be masked, just return
 	retn

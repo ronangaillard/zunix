@@ -16,11 +16,17 @@
 	.optsdcc	-mz80 sdcccall(1)
 
 	.globl	_panic
+	.globl	_timer_interrupt
 
 	.area	_VECTORS
 
 interrupt_table::
-	.rept	128
+; CTC block, at the offset CTC_VECTOR of platform/vectors.h: move both together
+	.dw	unexpected_interrupt	; ctc channel 0
+	.dw	unexpected_interrupt	; ctc channel 1
+	.dw	unexpected_interrupt	; ctc channel 2
+	.dw	timer_handler		; ctc channel 3
+	.rept	124
 	.dw	unexpected_interrupt
 	.endm
 
@@ -36,3 +42,23 @@ msg_unexpected_interrupt:
 unexpected_interrupt:
 	ld	hl, #msg_unexpected_interrupt
 	jp	_panic
+
+;---------------------------------------------------------------------------------------------
+; timer_handler: the CTC channel that ticks points here
+
+timer_handler:
+	push	af
+	push	bc
+	push	de
+	push	hl
+	push	ix
+	push	iy
+	call	_timer_interrupt
+	pop	iy
+	pop	ix
+	pop	hl
+	pop	de
+	pop	bc
+	pop	af
+	ei
+	reti
