@@ -7,8 +7,12 @@
 #ifndef PLATFORM_VECTORS_H
 #define PLATFORM_VECTORS_H
 
-/* CTC: the CTC puts the channel number in bits 1-2 and bit 0 must
+/* CTC: 4 entries (channels 0 to 3), the CTC puts the channel number in bits 1-2 and bit 0 must
  * be 0, so a multiple of 8. */
 #define CTC_VECTOR 0x00
+
+/* SIO: 8 entries (4 causes for channel B, then 4 for channel A), with status affects vector the
+ * SIO replaces bits 1-3 and bit 0 must be 0, so a multiple of 16. 0x08-0x0F stay unused. */
+#define SIO_VECTOR 0x10
 
 #endif

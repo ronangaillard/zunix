@@ -30,6 +30,35 @@ run     jump to 0x0000 (a ret comes back to the prompt)
 boot    load kernel.bin from the CF card at 0x0000 and jump to it
 ```
 
+## Kernel layers
+
+The C sources are split in three directories, and what matters is who includes whom:
+
+```
+core/      the kernel itself       includes only core/
+dev/       generic chip drivers    includes only dev/, plus "board.h" by name
+platform/  this board              includes core/, dev/ and platform/
+```
+
+`platform/` is the only layer that knows the other two. It is the glue: it decides that the console
+is SIO channel A at 115200, which CTC channel ticks, and where each chip's entries sit in the IM 2
+table. Porting to another board means rewriting `platform/` only.
+
+Calls still go both ways, through prototypes that a layer declares and `platform/` defines:
+
+- `core/` declares what it needs from the board (`kputchar` in `core/kprintf.h`, `console_init` and
+  `kgetchar` in `core/console.h`, `plt_timer_init` in `core/timer.h`).
+- A driver declares the hooks it calls back (`plt_sio_set_speed` in `dev/sio.h`). Values the board
+  chooses, like the SIO's interrupt vector, are passed as parameters instead.
+- Port addresses can't be parameters, since `__sfr __at` must be known at compile time. A driver
+  includes `"board.h"` with no directory, and lists in its header the names it expects there.
+  `-I$(BOARD)` in the Makefile makes that name point to `platform/board.h`. The editor (clangd)
+  reads `compile_flags.txt` instead of the Makefile, so it carries the same `-I`.
+
+Booting the console, for instance: `main` (core) calls `console_init` (platform), which calls
+`sio_init(SIO_115200, SIO_VECTOR)` (dev), which calls back `plt_sio_set_speed` (platform) to program
+the CTC.
+
 ## Memory map
 
 512 KB of RAM in 8 banks of 64 KB. 0x0000-0xBFFF shows the bank selected in the latch (port 0x38,

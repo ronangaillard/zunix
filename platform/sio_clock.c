@@ -1,7 +1,7 @@
-#include "platform/sio_clock.h"
+/* Baud rate clock of the SIO on this board: CTC channel 0 divides the 1.8432 MHz oscillator */
 #include "dev/sio.h"
 #include "dev/z80ctc.h"
-#include "platform/ports.h"
+#include "platform/board.h"
 
 static const uint8_t ctc_divisor[] = {12, 6, 3, 2, 1};
 

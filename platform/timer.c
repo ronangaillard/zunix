@@ -1,7 +1,7 @@
 /* The board's timer: which CTC channel ticks, and at what rate */
 #include "core/timer.h"
 #include "dev/z80ctc.h"
-#include "platform/ports.h"
+#include "platform/board.h"
 #include "platform/vectors.h"
 
 /* Channel 3 in timer mode counts the CPU clock (CLK_C). Rate = CPU clock / 256 / TIMER_CONSTANT: at

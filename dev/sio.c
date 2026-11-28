@@ -1,9 +1,8 @@
 #include "dev/sio.h"
 #include "dev/z80sio.h"
-#include "platform/ports.h"
-#include "platform/sio_clock.h"
+#include "board.h"
 
-void sio_init(uint8_t speed)
+void sio_init(uint8_t speed, uint8_t vector)
 {
     // make sure we are on register 0
     sio_ac = SIO_R0;
@@ -14,6 +13,9 @@ void sio_init(uint8_t speed)
     } while (!(sio_ac & SIO_RR1_ALL_SENT));
 
     plt_sio_set_speed(speed);
+
+    sio_bc = SIO_R2;
+    sio_bc = vector;
 
     sio_ac = SIO_R0 | SIO_WR0_CHANNEL_RESET;
     sio_ac = SIO_R4;

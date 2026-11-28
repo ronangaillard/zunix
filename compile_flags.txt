@@ -2,6 +2,7 @@
 -std=c11
 -ffreestanding
 -I.
+-Iplatform
 -Wall
 -Wextra
 -Wno-main-return-type

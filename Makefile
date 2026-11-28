@@ -6,8 +6,12 @@
 #   dev/       drivers
 #   platform/  what is specific to this board: entry point, port addresses
 # Every .c and .s of these directories is built. Headers are included from the kernel root
-# (#include "dev/sio.h"), hence -I.
+# (#include "dev/sio.h"), hence -I.; -I$(BOARD) is for the drivers' contract header (see BOARD).
 BUILD  ?= build
+# The board: generic drivers of dev/ include its board.h by name only ("board.h"), and -I below
+# makes that name point into this directory. Another board = another directory here, and in
+# compile_flags.txt too (clangd, the editor's C checker, reads it instead of this Makefile).
+BOARD  := platform
 DIRS   := core dev platform
 CSRC   := $(foreach d,$(DIRS),$(wildcard $(d)/*.c))
 ASRC   := $(filter-out platform/crt0.s,$(foreach d,$(DIRS),$(wildcard $(d)/*.s)))
@@ -25,7 +29,7 @@ $(BUILD)/%.rel: %.s
 
 $(BUILD)/%.rel: %.c $(HDRS)
 	mkdir -p $(dir $@)
-	sdcc -mz80 --opt-code-size -I. -c -o $@ $<
+	sdcc -mz80 --opt-code-size -I. -I$(BOARD) -c -o $@ $<
 
 # SDCC's own library for the Z80 (z80.lib), next to the sdcc binary.
 LIBZ80 := $(abspath $(dir $(shell command -v sdcc))../share/sdcc/lib/z80)

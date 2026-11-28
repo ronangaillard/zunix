@@ -26,7 +26,20 @@ interrupt_table::
 	.dw	unexpected_interrupt	; ctc channel 1
 	.dw	unexpected_interrupt	; ctc channel 2
 	.dw	timer_handler		; ctc channel 3
-	.rept	124
+	.dw	unexpected_interrupt	; unused, keeps the SIO block 16-byte aligned
+	.dw	unexpected_interrupt
+	.dw	unexpected_interrupt
+	.dw	unexpected_interrupt
+; SIO block, at the offset SIO_VECTOR of platform/vectors.h: move both together
+	.dw	unexpected_interrupt	; sio channel B transmit buffer empty
+	.dw	unexpected_interrupt	; sio channel B external/status change
+	.dw	unexpected_interrupt	; sio channel B receive character available
+	.dw	unexpected_interrupt	; sio channel B special receive condition
+	.dw	unexpected_interrupt	; sio channel A transmit buffer empty
+	.dw	unexpected_interrupt	; sio channel A external/status change
+	.dw	unexpected_interrupt	; sio channel A receive character available
+	.dw	unexpected_interrupt	; sio channel A special receive condition
+	.rept	112			; 128 entries in all
 	.dw	unexpected_interrupt
 	.endm
 
