@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="990" height="610" viewBox="0 0 990 610" role="img" aria-label="The three layers of the kernel. platform/ includes core/ and dev/; dev/ finds board.h by name through -I. Booting the console, calls go core, platform, dev, platform.">
+<defs>
+  <marker id="inc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f62c9"/></marker>
+  <marker id="call" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c96a12"/></marker>
+</defs>
+<rect x="0" y="0" width="990" height="610" fill="#ffffff"/>
+
+<g font-family="Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1d2330">
+  <text x="20" y="30" font-size="15" font-weight="bold">Who includes whom</text>
+  <text x="200" y="30" font-size="12" fill="#5b6475">only platform/ knows the other two layers</text>
+</g>
+
+<!-- layer boxes -->
+<rect x="20" y="80" width="270" height="230" rx="2" fill="#e9dcfa" stroke="#1d2330" stroke-width="1.8"/>
+<rect x="360" y="80" width="270" height="230" rx="2" fill="#fde3b5" stroke="#1d2330" stroke-width="1.8"/>
+<rect x="700" y="80" width="270" height="230" rx="2" fill="#b3d9bf" stroke="#1d2330" stroke-width="1.8"/>
+
+<g font-family="Helvetica Neue, Helvetica, Arial, sans-serif" text-anchor="middle">
+  <text x="155" y="106" font-size="15" font-weight="bold" fill="#1d2330">core/</text>
+  <text x="155" y="125" font-size="12" fill="#5b6475">the kernel itself</text>
+  <text x="495" y="106" font-size="15" font-weight="bold" fill="#1d2330">dev/</text>
+  <text x="495" y="125" font-size="12" fill="#5b6475">generic chip drivers</text>
+  <text x="835" y="106" font-size="15" font-weight="bold" fill="#1d2330">platform/</text>
+  <text x="835" y="125" font-size="12" fill="#5b6475">this board: the glue</text>
+
+  <text x="155" y="298" font-size="11" fill="#5b6475">includes only core/</text>
+  <text x="495" y="298" font-size="11" fill="#5b6475">includes only dev/, and "board.h" by name</text>
+  <text x="835" y="298" font-size="11" fill="#5b6475">includes core/, dev/ and platform/</text>
+</g>
+
+<!-- board.h highlight -->
+<rect x="790" y="144" width="90" height="22" rx="2" fill="#ffffff" stroke="#1f62c9" stroke-width="1.5"/>
+
+<g font-family="Menlo, Monaco, Courier New, monospace" font-size="12" fill="#1d2330" text-anchor="middle">
+  <text x="155" y="160">main.c</text>
+  <text x="155" y="182">kprintf.c  kprintf.h</text>
+  <text x="155" y="204">console.h</text>
+  <text x="155" y="226">timer.c  timer.h</text>
+  <text x="155" y="248">panic.c  panic.h</text>
+
+  <text x="495" y="160">sio.c  sio.h</text>
+  <text x="495" y="182">z80sio.h</text>
+  <text x="495" y="204">z80ctc.h</text>
+
+  <text x="835" y="160" fill="#1f62c9" font-weight="bold">board.h</text>
+  <text x="835" y="182">console.c</text>
+  <text x="835" y="204">sio_clock.c</text>
+  <text x="835" y="226">timer.c  halt.c</text>
+  <text x="835" y="248">vectors.h  vectors.s</text>
+  <text x="835" y="270">crt0.s</text>
+</g>
+
+<!-- includes: platform -> dev, platform -> core -->
+<line x1="700" y1="230" x2="633" y2="230" stroke="#1f62c9" stroke-width="2" marker-end="url(#inc)"/>
+<text x="665" y="222" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#1f62c9" text-anchor="middle">includes</text>
+<path d="M835,80 V56 H155 V77" fill="none" stroke="#1f62c9" stroke-width="2" marker-end="url(#inc)"/>
+<text x="495" y="50" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#1f62c9" text-anchor="middle">includes (prototypes core/ declares: kputchar, console_init, plt_timer_init, ...)</text>
+
+<!-- dev -> board.h by name -->
+<path d="M560,155 H787" fill="none" stroke="#1f62c9" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#inc)"/>
+<g font-family="Menlo, Monaco, Courier New, monospace" font-size="10.5" fill="#1f62c9" text-anchor="end">
+  <text x="696" y="146">"board.h"</text>
+  <text x="696" y="176">-I$(BOARD)</text>
+</g>
+
+<!-- calls -->
+<g font-family="Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1d2330">
+  <text x="20" y="352" font-size="15" font-weight="bold">Booting the console</text>
+  <text x="200" y="352" font-size="12" fill="#5b6475">calls go both ways, through prototypes</text>
+</g>
+<rect x="20" y="370" width="270" height="225" fill="#f3f6fc"/>
+<rect x="360" y="370" width="270" height="225" fill="#f3f6fc"/>
+<rect x="700" y="370" width="270" height="225" fill="#f3f6fc"/>
+<g font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#5b6475" text-anchor="middle">
+  <text x="155" y="388">core/</text>
+  <text x="495" y="388">dev/</text>
+  <text x="835" y="388">platform/</text>
+</g>
+
+<path d="M210,415 H835 V438" fill="none" stroke="#c96a12" stroke-width="2" marker-end="url(#call)"/>
+<path d="M835,470 V482 H495 V498" fill="none" stroke="#c96a12" stroke-width="2" marker-end="url(#call)"/>
+<path d="M620,515 H835 V538" fill="none" stroke="#c96a12" stroke-width="2" marker-end="url(#call)"/>
+
+<rect x="100" y="400" width="110" height="30" rx="15" fill="#e9dcfa" stroke="#1d2330" stroke-width="1.5"/>
+<rect x="755" y="440" width="160" height="30" rx="15" fill="#b3d9bf" stroke="#1d2330" stroke-width="1.5"/>
+<rect x="370" y="500" width="250" height="30" rx="15" fill="#fde3b5" stroke="#1d2330" stroke-width="1.5"/>
+<rect x="725" y="540" width="220" height="30" rx="15" fill="#b3d9bf" stroke="#1d2330" stroke-width="1.5"/>
+
+<g font-family="Menlo, Monaco, Courier New, monospace" font-size="12" fill="#1d2330" text-anchor="middle">
+  <text x="155" y="419">main()</text>
+  <text x="835" y="459">console_init()</text>
+  <text x="495" y="519">sio_init(SIO_115200, SIO_VECTOR)</text>
+  <text x="835" y="559">plt_sio_set_speed(speed)</text>
+</g>
+<g font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#c96a12">
+  <text x="450" y="408">1. needs a console</text>
+  <text x="560" y="477">2. SIO A, 115200, vector 0x10</text>
+  <text x="640" y="508">3. baud clock</text>
+  <text x="835" y="588" text-anchor="middle" fill="#5b6475">4. programs CTC channel 0</text>
+</g>
+</svg>

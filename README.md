@@ -40,6 +40,8 @@ dev/       generic chip drivers    includes only dev/, plus "board.h" by name
 platform/  this board              includes core/, dev/ and platform/
 ```
 
+![The three layers: who includes whom, and the calls when the console boots](docs/layers.svg)
+
 `platform/` is the only layer that knows the other two. It is the glue: it decides that the console
 is SIO channel A at 115200, which CTC channel ticks, and where each chip's entries sit in the IM 2
 table. Porting to another board means rewriting `platform/` only.
